@@ -18,6 +18,8 @@ class WFSCall
     def result
     String text
 
+    WFSCall(){}
+
     static void initSsl()
     {
         TrustManager[] trustAllCerts = [

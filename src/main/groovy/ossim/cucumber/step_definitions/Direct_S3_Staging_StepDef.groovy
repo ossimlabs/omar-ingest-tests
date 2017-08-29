@@ -14,7 +14,7 @@ String defaultCharset = Charset.defaultCharset().displayName()
 config = CucumberConfig.config
 def stagingService = config.stagingService
 
-static String getFilename(platform, extension, remoteType ) {
+String getFilename(platform, extension, remoteType ) {
     platform = platform.toLowerCase()
     extension = extension.toLowerCase()
     remoteType = remoteType.toLowerCase()

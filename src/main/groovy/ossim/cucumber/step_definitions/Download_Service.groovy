@@ -21,7 +21,7 @@ def stagingService = config.stagingService
 def wfsServer = config.wfsServerProperty
 
 
-static def getImageId(format, index, platform, sensor ) {
+def getImageId(format, index, platform, sensor ) {
     format = format.toLowerCase()
     platform = platform.toLowerCase()
     sensor = sensor.toLowerCase()

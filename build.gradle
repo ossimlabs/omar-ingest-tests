@@ -1,0 +1,86 @@
+buildscript {
+    ext {
+        grailsVersion = project.grailsVersion
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+version "1.0.0"
+
+apply plugin:"groovy"
+apply plugin:"java"
+apply plugin:"eclipse"
+apply plugin:"idea"
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testRuntime
+    }
+}
+
+ext {
+    grailsVersion = project.grailsVersion
+    gradleWrapperVersion = project.gradleWrapperVersion
+}
+
+repositories {
+    mavenLocal()
+    maven { url "${System.env.OSSIM_MAVEN_PROXY}" }
+    maven { url "http://download.osgeo.org/webdav/geotools/" }
+    mavenCentral()
+    maven { url "https://repo.grails.org/grails/core" }
+    maven { url "http://repo.boundlessgeo.com/main" }
+    maven { url "http://maven.geo-solutions.it/" }
+    maven { url "https://artifacts.unidata.ucar.edu/content/repositories/unidata/" }
+    maven { url "https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases" }
+
+}
+
+
+if(project.hasProperty("runTags"))
+{
+  tags = Eval.me runTags
+}
+
+task ingest() {
+    dependsOn assemble
+    doLast {
+        javaexec {
+            main = "cucumber.api.cli.Main"
+            classpath = configurations.cucumberRuntime
+            args = [
+                "--tags",
+                "@staging_service, @direct_s3_staging_service, @download_service",
+                "--tags",
+                "~@C2S",
+                '--plugin', 'json:build/ingest.json',
+                '--glue', 'src/main',
+                'src/cucumber/resources']
+
+        }
+    }
+}
+
+//pretty output.
+build.dependsOn ingest
+
+dependencies {
+
+    compile 'info.cukes:cucumber-groovy:1.2.2'
+    testCompile "info.cukes:cucumber-junit:1.2.2"
+    testCompile 'junit:junit:4.11'
+    compile "com.amazonaws:aws-java-sdk-sqs:1.11.26"
+
+    compile "org.gebish:geb-core:1.0"
+
+    compile( "org.geoscript:geoscript-groovy:1.7.0" ) {
+        exclude module: 'ehcache'
+        exclude module: "groovy-all"
+        exclude module: "slf4j-log4j12"
+        exclude module: "xml-apis"
+    }
+
+    cucumberRuntime files( "${jar.archivePath}" )
+}

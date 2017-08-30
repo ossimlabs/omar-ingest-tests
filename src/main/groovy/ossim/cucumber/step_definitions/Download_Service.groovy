@@ -4,7 +4,7 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import ossim.cucumber.config.CucumberConfig
 
-import ossim.cucumber.ogc.WFSCall
+import ossim.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
 

@@ -1,4 +1,4 @@
-package ossim.cucumber.ogc
+package ossim.cucumber.ogc.wfs
 
 import groovy.json.JsonSlurper
 import javax.net.ssl.HostnameVerifier

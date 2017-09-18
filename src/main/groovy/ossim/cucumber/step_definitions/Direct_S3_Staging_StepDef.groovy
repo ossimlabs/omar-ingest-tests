@@ -2,7 +2,7 @@ package ossim.cucumber.step_definitions
 
 import ossim.cucumber.config.CucumberConfig
 
-import ossim.cucumber.ogc.WFSCall
+import ossim.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
 

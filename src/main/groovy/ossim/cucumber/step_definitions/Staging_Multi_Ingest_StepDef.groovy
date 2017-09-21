@@ -128,7 +128,7 @@ After("@last") {
                 allImagesIngested = false
             }
         }
-        println "Ingested ${imagesIngested} of ${imageIds.size()} images"
+        println "Ingested ${imagesIngested} of ${imageIds.size()} images\n\n\n"
         timer -= 10
         if (allImagesIngested) timer = 0
     }

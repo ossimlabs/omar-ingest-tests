@@ -124,7 +124,6 @@ After("@last") {
             }
             else
             {
-                println "Waiting on ${it}"
                 allImagesIngested = false
             }
         }

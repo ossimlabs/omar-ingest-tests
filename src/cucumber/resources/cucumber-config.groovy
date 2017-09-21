@@ -9,6 +9,7 @@ wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"
 
 waitForStage = 5 // minutes to wait
+waitForStageMultiIngest = 30 // minutes to wait for all multi ingest images to stage
 images = [
         geoeye: [
                 msi: [

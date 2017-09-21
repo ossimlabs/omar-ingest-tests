@@ -61,6 +61,23 @@ task ingest() {
     }
 }
 
+task ingestMultipleImages() {
+    dependsOn assemble
+    doLast {
+        javaexec {
+            main = "cucumber.api.cli.Main"
+            classpath = configurations.cucumberRuntime
+            args = [
+                    "--tags",
+                    "@staging_multi_ingest_service",
+                    '--plugin', 'json:build/ingestMultipleImages.json',
+                    '--glue', 'src/main',
+                    'src/cucumber/resources']
+
+        }
+    }
+}
+
 //pretty output.
 build.dependsOn ingest
 

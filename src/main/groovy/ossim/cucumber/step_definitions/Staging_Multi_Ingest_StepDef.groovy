@@ -115,16 +115,21 @@ After("@last") {
         def imagesIngested = 0
         imageIds.each {
             def filter = "filename LIKE '%${it}%'"
-            def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-            features = wfsQuery.result.features
-            if (features.size() > 0)
-            {
-                println "Successfully ingested ${it}"
-                imagesIngested++
-            }
-            else
-            {
+            try {
+                def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
+                features = wfsQuery.result.features
+                if (features.size() > 0)
+                {
+                    println "Successfully ingested ${it}"
+                    imagesIngested++
+                }
+                else
+                {
+                    allImagesIngested = false
+                }
+            } catch (Exception e) {
                 allImagesIngested = false
+                println "Failed WFS call for image ${it}"
             }
         }
         println "Ingested ${imagesIngested} of ${imageIds.size()} images\n\n\n"

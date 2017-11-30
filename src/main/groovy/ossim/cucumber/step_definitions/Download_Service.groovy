@@ -271,7 +271,7 @@ Then(~/^the hsi should contain the proper files$/) {->
             {
                 foundHsi = true
             }
-            else if (name.endsWith(".hdr"))
+            else if (name.endsWith("hsi.hdr"))
             {
                 foundHdr = true 
             }

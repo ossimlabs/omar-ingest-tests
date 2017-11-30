@@ -7,6 +7,8 @@ import ossim.cucumber.config.CucumberConfig
 import ossim.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 this.metaClass.mixin(cucumber.api.groovy.Hooks)
 this.metaClass.mixin(cucumber.api.groovy.EN)
@@ -213,4 +215,71 @@ When(~/^the download service is called without a json message$/) { ->
     httpResponse = new JsonSlurper().parseText(stdOut.toString())
 
     assert httpResponse != null
+}
+
+When(~/^we download a local hsi envi image$/) { ->
+
+    String filename = config.images.local.hsi.envi
+    def filter = "filename = '${filename}'"
+    def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
+    def features = wfsQuery.result.features
+
+    println "DOWNLOADING FILES FOR filename = ${filename}"
+    // get all the supporting files
+    def rasterFilesUrl = stagingService + "/getRasterFiles?id=${features[0].properties.id}"
+    def rasterFilesText = new URL(rasterFilesUrl).getText()
+    def rasterFiles = new JsonSlurper().parseText(rasterFilesText).results
+
+    // formulate the post data
+    File zipFilename = "localHsiEnvi.zip" as File
+    def map = [
+        type: "Download",
+        zipFileName: zipFilename.toString(),
+        archiveOptions: [ type: "zip" ],
+        fileGroups: [
+            [
+                rootDirectory: "",
+                files: rasterFiles
+            ]
+        ]
+    ]
+    def jsonPost = JsonOutput.toJson(map)
+
+    // download the file
+    def command = ["curl", "-L", "-o", "${zipFilename}", "-d", "fileInfo=${URLEncoder.encode(jsonPost, defaultCharset)}", "${downloadService}/archive/download"]
+    println command
+    def process = command.execute()
+    process.waitFor()
+
+    assert zipFilename.exists() == true
+
+}
+Then(~/^the hsi should contain the proper files$/) {->
+
+//    ZipInputStream in
+    File file = new File("localHsiEnvi.zip")
+    Boolean foundHsi = false;
+    Boolean foundHdr = false;
+    if(file.exists())
+    {
+        FileInputStream input = new FileInputStream(file);
+        ZipInputStream zip = new ZipInputStream(input);
+        ZipEntry entry;
+        while ( (entry = zip.nextEntry)!= null) {
+            String name = entry.name
+            if(name.endsWith(".hsi"))
+            {
+                foundHsi = true
+            }
+            else if (name.endsWith(".hdr"))
+            {
+                foundHdr = true 
+            }
+        }
+ 
+        zip.close();
+        input.close()
+    }
+ 
+    assert ((foundHsi&&foundHdr) == true)
 }

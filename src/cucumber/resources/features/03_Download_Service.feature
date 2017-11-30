@@ -33,3 +33,8 @@ Feature: DownloadService
     Given that the download service is running
     When the download service is called with the wrong archive type
     Then the response should return a status of 415 and a message of "Archive Option Type Not Recognized"
+
+  Scenario: Calling Download Service For HSI data
+    Given that the download service is running
+    When we download a local hsi envi image
+    Then the hsi should contain the proper files

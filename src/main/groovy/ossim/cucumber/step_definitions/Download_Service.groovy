@@ -221,6 +221,7 @@ When(~/^we download a local hsi envi image$/) { ->
 
     String filename = config.images.local.hsi.envi
     def filter = "filename = '${filename}'"
+    println "Finding file with filter ${filter}"
     def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
     def features = wfsQuery.result.features
 

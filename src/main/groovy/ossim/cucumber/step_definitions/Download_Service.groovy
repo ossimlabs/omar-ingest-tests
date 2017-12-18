@@ -102,6 +102,8 @@ Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image and (.*) (.
     def imageId1 = getImageId( format1, index1, platform1, sensor1 )
     def imageId2 = getImageId( format2, index2, platform2, sensor2 )
 
+    println httpResponse
+
     assert httpResponse.contains(imageId1) == true &&
         httpResponse.contains(imageId2) == true &&
         new XmlSlurper().parseText(httpResponse).Document.Folder[0].GroundOverlay.size() == 2

@@ -40,6 +40,19 @@ Given(~/^that the download service is running$/) { ->
     assert healthJson.status == "UP"
 }
 
+Given(~/^(.*) (.*) (.*) (.*) image has been staged$/) {
+    String index, String platform, String sensor, String format ->
+
+        def imageId = getImageId( format, index, platform, sensor )
+
+        def filter = "filename LIKE '%${imageId}%'"
+
+        def wfsCall = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
+
+        def numFeatures = wfsCall.numFeatures
+        assert numFeatures > 0
+}
+
 Then(~/^(.*) (.*) (.*) (.*) image is downloaded along with supporting zip file$/) {
     String index, String platform, String sensor, String format ->
 

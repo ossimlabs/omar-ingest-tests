@@ -102,9 +102,7 @@ Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image and (.*) (.
     def imageId1 = getImageId( format1, index1, platform1, sensor1 )
     def imageId2 = getImageId( format2, index2, platform2, sensor2 )
 
-//    println "DEBUG HTTP RESPONSE: $httpResponse"
-    println "DEBUG HTTP RESPONSE: ${new XmlSlurper().parseText(httpResponse)}"
-    println "DEBUG HTTP RESPONSE: ${new XmlSlurper().parseText(httpResponse).text()}"
+    println "DEBUG HTTP RESPONSE: STATUS=${httpResponse.status},MESSAGE=${httpResponse.message},RAW=$httpResponse"
 
     assert httpResponse.contains(imageId1) == true &&
         httpResponse.contains(imageId2) == true &&

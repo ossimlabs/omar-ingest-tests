@@ -3,7 +3,6 @@ package ossim.cucumber.step_definitions
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import ossim.cucumber.config.CucumberConfig
-
 import ossim.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
@@ -104,25 +103,40 @@ Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image and (.*) (.
 
     println "DEBUG HTTP RESPONSE: $httpResponse"
 
-    assert httpResponse.contains(imageId1) == true &&
-        httpResponse.contains(imageId2) == true &&
-        new XmlSlurper().parseText(httpResponse).Document.Folder[0].GroundOverlay.size() == 2
+        assert new XmlSlurper().parseText(httpResponse).Document.toString().contains(imageId1.toString())
+
+//    assert httpResponse.contains(imageId1) == true &&
+//        httpResponse.contains(imageId2) == true &&
+//        new XmlSlurper().parseText(httpResponse).Document.Folder[0].GroundOverlay.size() == 2
 }
 
 When(~/^the download service is called to download a KML of (.*) (.*) (.*) (.*) image and (.*) (.*) (.*) (.*) image$/) {
     String index1, String platform1, String sensor1, String format1, String index2, String platform2, String sensor2, String format2 ->
 
-    def imageId1 = getImageId( format1, index1, platform1, sensor1 )
-    def imageId2 = getImageId( format2, index2, platform2, sensor2 )
+        def imageId1 = getImageId(format1, index1, platform1, sensor1)
+        def imageId2 = getImageId(format2, index2, platform2, sensor2)
 
-    def filter = "filename LIKE '%${imageId1}%' OR filename LIKE '%${imageId2}%'"
-    def wfsCall = new WFSCall(wfsServer, filter, "KML", 2)
-    println "DEBUG WFSCALL: ${wfsCall.text}"
-    println "DEBUG WFSCALL: ${wfsCall.result}"
-    httpResponse wfsCall.getResultText()
+        // Fetch databaseId for the image
+        def filter = "filename LIKE '%${imageId1}%' OR filename LIKE '%${imageId2}%'"
+        def wfsCall = new WFSCall(wfsServer, filter, "JSON", 2)
+        int databaseId = wfsCall.result.features[0].properties.id
+
+        // Fetch KML
+        URL superOverlayUrl = new URL("https://omar-dev.ossim.io/omar-superoverlay/superOverlay/createKml/$databaseId")
+        String kmlText = superOverlayUrl.text
 
 
-    assert httpResponse.contains("xml") == true
+        println "DEBUG WFSCALL: ${wfsCall.text}"
+        println "\nDEBUG KML TEXT: ${kmlText}"
+
+
+
+//        httpResponse wfsCall.getResultText()
+        httpResponse = kmlText
+
+
+        // Make sure the call was made without error
+        assert httpResponse.contains("xml")
 }
 
 When(~/^the download service is called to download (.*) (.*) (.*) (.*) image as a zip file$/) {

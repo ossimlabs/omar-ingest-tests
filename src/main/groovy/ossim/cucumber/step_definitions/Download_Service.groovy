@@ -39,19 +39,6 @@ Given(~/^that the download service is running$/) { ->
     assert healthJson.status == "UP"
 }
 
-Given(~/^(.*) (.*) (.*) (.*) image has been staged$/) {
-    String index, String platform, String sensor, String format ->
-
-        def imageId = getImageId( format, index, platform, sensor )
-
-        def filter = "filename LIKE '%${imageId}%'"
-
-        def wfsCall = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
-
-        def numFeatures = wfsCall.numFeatures
-        assert numFeatures > 0
-}
-
 Then(~/^(.*) (.*) (.*) (.*) image is downloaded along with supporting zip file$/) {
     String index, String platform, String sensor, String format ->
 
@@ -93,30 +80,6 @@ Then(~/^the response should return a status of (\d+) and a message of "(.*)"$/) 
 
 
     assert httpResponse.status == statusCode && httpResponse.message == message
-}
-
-Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image$/) {
-    String index, String platform, String sensor, String format ->
-
-    def imageId = getImageId( format, index, platform, sensor )
-    assert new XmlSlurper().parseText(httpResponse).Document.name.toString().contains(imageId.toString())
-}
-
-When(~/^the download service is called to download a KML super-overlay of (.*) (.*) (.*) (.*) image$/) {
-    String index, String platform, String sensor, String format ->
-
-        // Fetch databaseId for the image
-        def imageId = getImageId(format, index, platform, sensor)
-        def filter = "filename LIKE '%${imageId}%'"
-        def wfsCall = new WFSCall(wfsServer, filter, "JSON", 2)
-        int databaseId = wfsCall.result.features[0].properties.id
-
-        // Fetch KML
-        URL superOverlayUrl = new URL("https://omar-dev.ossim.io/omar-superoverlay/superOverlay/createKml/$databaseId")
-        httpResponse = superOverlayUrl.text
-
-        // Make sure the call was made without error
-        assert httpResponse.contains("xml") && httpResponse.contains("kml")
 }
 
 When(~/^the download service is called to download (.*) (.*) (.*) (.*) image as a zip file$/) {

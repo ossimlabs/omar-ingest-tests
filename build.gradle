@@ -51,8 +51,8 @@ task ingest() {
             classpath = configurations.cucumberRuntime
             args = [
                 "--tags",
-//                "@local_staging_service, @staging_service, @direct_s3_staging_service, @download_service",
-                "@download_service",
+//                "@local_staging_service, @staging_service, @direct_s3_staging_service, @download_service, @superoverlay_service",
+                "@download_service, @superoverlay_service",
                 "--tags",
                 "~@C2S",
                 '--plugin', 'json:build/ingest.json',

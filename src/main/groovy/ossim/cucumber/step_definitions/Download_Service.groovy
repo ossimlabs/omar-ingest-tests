@@ -116,7 +116,10 @@ When(~/^the download service is called to download a KML of (.*) (.*) (.*) (.*) 
     def imageId2 = getImageId( format2, index2, platform2, sensor2 )
 
     def filter = "filename LIKE '%${imageId1}%' OR filename LIKE '%${imageId2}%'"
-    httpResponse = new WFSCall(wfsServer, filter, "KML", 2).getResultText()
+    def wfsCall = new WFSCall(wfsServer, filter, "KML", 2)
+    println "DEBUG WFSCALL: ${wfsCall.text}"
+    println "DEBUG WFSCALL: ${wfsCall.result}"
+    httpResponse wfsCall.getResultText()
 
 
     assert httpResponse.contains("xml") == true

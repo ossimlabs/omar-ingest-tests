@@ -95,48 +95,28 @@ Then(~/^the response should return a status of (\d+) and a message of "(.*)"$/) 
     assert httpResponse.status == statusCode && httpResponse.message == message
 }
 
-Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image and (.*) (.*) (.*) (.*) image$/) {
-    String index1, String platform1, String sensor1, String format1, String index2, String platform2, String sensor2, String format2 ->
+Then(~/^the service returns a KML file for (.*) (.*) (.*) (.*) image$/) {
+    String index, String platform, String sensor, String format ->
 
-    def imageId1 = getImageId( format1, index1, platform1, sensor1 )
-    def imageId2 = getImageId( format2, index2, platform2, sensor2 )
-
-    println "DEBUG HTTP RESPONSE: $httpResponse"
-
-        assert new XmlSlurper().parseText(httpResponse).Document.toString().contains(imageId1.toString())
-
-//    assert httpResponse.contains(imageId1) == true &&
-//        httpResponse.contains(imageId2) == true &&
-//        new XmlSlurper().parseText(httpResponse).Document.Folder[0].GroundOverlay.size() == 2
+    def imageId = getImageId( format, index, platform, sensor )
+    assert new XmlSlurper().parseText(httpResponse).Document.name.toString().contains(imageId.toString())
 }
 
-When(~/^the download service is called to download a KML of (.*) (.*) (.*) (.*) image and (.*) (.*) (.*) (.*) image$/) {
-    String index1, String platform1, String sensor1, String format1, String index2, String platform2, String sensor2, String format2 ->
-
-        def imageId1 = getImageId(format1, index1, platform1, sensor1)
-        def imageId2 = getImageId(format2, index2, platform2, sensor2)
+When(~/^the download service is called to download a KML super-overlay of (.*) (.*) (.*) (.*) image$/) {
+    String index, String platform, String sensor, String format ->
 
         // Fetch databaseId for the image
-        def filter = "filename LIKE '%${imageId1}%' OR filename LIKE '%${imageId2}%'"
+        def imageId = getImageId(format, index, platform, sensor)
+        def filter = "filename LIKE '%${imageId}%'"
         def wfsCall = new WFSCall(wfsServer, filter, "JSON", 2)
         int databaseId = wfsCall.result.features[0].properties.id
 
         // Fetch KML
         URL superOverlayUrl = new URL("https://omar-dev.ossim.io/omar-superoverlay/superOverlay/createKml/$databaseId")
-        String kmlText = superOverlayUrl.text
-
-
-        println "DEBUG WFSCALL: ${wfsCall.text}"
-        println "\nDEBUG KML TEXT: ${kmlText}"
-
-
-
-//        httpResponse wfsCall.getResultText()
-        httpResponse = kmlText
-
+        httpResponse = superOverlayUrl.text
 
         // Make sure the call was made without error
-        assert httpResponse.contains("xml")
+        assert httpResponse.contains("xml") && httpResponse.contains("kml")
 }
 
 When(~/^the download service is called to download (.*) (.*) (.*) (.*) image as a zip file$/) {

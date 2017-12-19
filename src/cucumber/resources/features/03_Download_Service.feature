@@ -9,9 +9,8 @@ Feature: DownloadService
 
   Scenario: [DLS-02] Return KML file for list of images
     Given a QuickBird MSI GeoTIFF image has been staged
-#    And a TerraSAR-X SAR NITF20 image has been staged
-    When the download service is called to download a KML of a QuickBird MSI GeoTIFF image and a TerraSAR-X SAR NITF20 image
-    Then the service returns a KML file for a QuickBird MSI GeoTIFF image and a TerraSAR-X SAR NITF20 image
+    When the download service is called to download a KML super-overlay of a QuickBird MSI GeoTIFF image
+    Then the service returns a KML file for a QuickBird MSI GeoTIFF image
 
 #  Scenario: [DLS-03] Return SuperOverlay for list of images
 #    Given a RadarSat SAR NITF21 has been staged

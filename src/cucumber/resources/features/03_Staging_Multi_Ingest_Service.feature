@@ -36,12 +36,13 @@ Feature: StagingMultiIngestService
     When a RapidEye MSI GeoTIFF AVRO message is placed on the SQS - multi ingest
     Then a RapidEye MSI GeoTIFF should be discoverable - multi ingest
 
-  Scenario: [STG-08] Make a TerraSAR-X SAR NITF20 image available for discovery
-    Given a TerraSAR-X SAR NITF20 is not already staged - multi ingest
-    When a TerraSAR-X SAR NITF20 AVRO message is placed on the SQS - multi ingest
-    Then a TerraSAR-X SAR NITF20 should be discoverable - multi ingest
+#  Disable use of TerraSAR image until NITF's larger than 4k X 4k pixels are allowed.
+#  Scenario: [STG-08] Make a TerraSAR-X SAR NITF20 image available for discovery
+#    Given a TerraSAR-X SAR NITF20 is not already staged - multi ingest
+#    When a TerraSAR-X SAR NITF20 AVRO message is placed on the SQS - multi ingest
+#    Then a TerraSAR-X SAR NITF20 should be discoverable - multi ingest
 
-  Scenario: [STG-09] Make aother WorldView2 PAN GeoTIFF image available for discovery
+  Scenario: [STG-09] Make another WorldView2 PAN GeoTIFF image available for discovery
     Given another WorldView2 PAN GeoTIFF is not already staged - multi ingest
     When another WorldView2 PAN GeoTIFF AVRO message is placed on the SQS - multi ingest
     Then another WorldView2 PAN GeoTIFF should be discoverable - multi ingest

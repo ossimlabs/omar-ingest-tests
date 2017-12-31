@@ -43,7 +43,7 @@ Given(~/^an AWS Remote (.*) (.*) (.*) image is not already indexed$/) {
             def command = "curl -X POST ${removeRasterUrl}"
             def process = command.execute()
             process.waitFor()
-            println "... Remnoved!"
+            println "... Removed!"
         }
 
         // redo the WFS query to see if the files have been removed

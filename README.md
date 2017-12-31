@@ -12,7 +12,6 @@ These tests are made using Cucumber, a test language that resembles basic Englis
 
 - *Staging* - tests the OMAR Stager. Downloads images from AWS by sending an AVRO mesage to omar-avro, creates overviews and histograms for them using omar-stager, and then indexes them using omar-stager.
 - *DirectS3Staging* - tests the OMAR DirectS3 Staging. Indexes images on S3 directly using the omar-stager.
-- *Download* - tests the OMAR Download service for correct responses given accepted and rejected input.
 
 More details on the content of the tests can be found in the Cucumber *.feature* files located in *src/cucumber/resources/features*
 

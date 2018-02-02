@@ -3,20 +3,25 @@ node {
     env.WORKSPACE=pwd()
     env.DISPLAY=":1"
     env.OSSIM_MAVEN_PROXY="https://artifactory.ossim.io/artifactory/ossim-deps"
-    env.CUCUMBER_CONFIG_LOCATION="${env.WORKSPACE}/omar-ingest-tests/conf/cucumber-config-dev.groovy"
+    env.CUCUMBER_CONFIG_LOCATION="${env.WORKSPACE}/${env.S3_CONFIG_FILE}"
     try{
         stage("Checkout"){
-           dir("ossim-ci"){
-              git branch: "${OSSIM_GIT_BRANCH}", url: 'https://github.com/ossimlabs/ossim-ci.git'
-           }
             dir("omar-ingest-tests"){
               git branch: "${OSSIM_GIT_BRANCH}", url: 'https://github.com/ossimlabs/omar-ingest-tests.git'
             }
+        }
+        stage("Download Artifacts"){
+           step ([$class: "CopyArtifact",
+                 projectName: "ossim-ci-${OSSIM_GIT_BRANCH}",
+                 filter: "ossim-ci-${OSSIM_GIT_BRANCH}.tgz",
+                 flatten: true])
+           sh "tar xvfz ossim-ci-${OSSIM_GIT_BRANCH}.tgz"
            notifyObj = load "${env.WORKSPACE}/ossim-ci/jenkins/pipeline/notify.groovy"
         }
         stage("Run Test"){
             dir("${env.WORKSPACE}/omar-ingest-tests"){
                sh """
+		aws s3 cp s3://${env.S3_CONFIG_FILE} ${env.WORKSPACE}/${env.S3_CONFIG_FILE}
                 ./gradlew ingest
                 echo ""
                """

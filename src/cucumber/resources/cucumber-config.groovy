@@ -6,6 +6,7 @@ s3BucketUrl = "https://s3.amazonaws.com"
 stagingService = "${rbtcloudRootDir}/omar-stager/dataManager"
 wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"
+sqsTimestampName = "Timestamp"
 
 waitForStage = 5 // minutes to wait
 waitForStageMultiIngest = 30 // minutes to wait for all multi ingest images to stage

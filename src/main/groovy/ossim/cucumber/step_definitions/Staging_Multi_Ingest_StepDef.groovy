@@ -1,6 +1,8 @@
 package ossim.cucumber.step_definitions
 
 import com.amazonaws.services.sqs.AmazonSQSClient
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import ossim.cucumber.config.CucumberConfig
 
 import ossim.cucumber.ogc.wfs.WFSCall
@@ -87,10 +89,12 @@ When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS - multi ingest$/) 
         def process = command.execute()
         process.waitFor()
         def text = process.getText()
-
+        def json = new JsonSlurper().parseText(text)
+        json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
+        def newSqsText = new JsonBuilder(json).toString()
 
         def sqs = AmazonSQSClient.newInstance()
-        sqs.sendMessage(config.sqsStagingQueue, text)
+        sqs.sendMessage(config.sqsStagingQueue, newSqsText)
 
         println "... Sent!"
 }

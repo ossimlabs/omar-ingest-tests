@@ -20,6 +20,7 @@ def imageBucket = config.s3Bucket
 def stagingService = config.stagingService
 def wfsServer = config.wfsServerProperty
 def waitForStageMultiIngest = config.waitForStageMultiIngest ?: 30
+def sqsTimestampName = config.sqsTimestampName
 Set<String> imageIds = new HashSet<>()
 
 def getImageId(format, index, platform, sensor)

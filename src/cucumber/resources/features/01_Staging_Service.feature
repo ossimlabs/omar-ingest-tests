@@ -54,10 +54,10 @@ Feature: StagingService
         When a QuickBird PAN GeoTIFF AVRO message is placed on the SQS
         Then a QuickBird PAN GeoTIFF should be discoverable
 
-    Scenario: [STG-09] Make a RapidEye MSI GeoTIFF image available for discovery
-        Given a RapidEye MSI GeoTIFF is not already staged
-        When a RapidEye MSI GeoTIFF AVRO message is placed on the SQS
-        Then a RapidEye MSI GeoTIFF should be discoverable
+#    Scenario: [STG-09] Make a RapidEye MSI GeoTIFF image available for discovery
+#        Given a RapidEye MSI GeoTIFF is not already staged
+#        When a RapidEye MSI GeoTIFF AVRO message is placed on the SQS
+#        Then a RapidEye MSI GeoTIFF should be discoverable
 
 #  Disable use of TerraSAR image until NITF's larger than 4k X 4k pixels are allowed.
 #    Scenario: [STG-10] Make a TerraSAR-X SAR NITF20 image available for discovery
@@ -75,7 +75,7 @@ Feature: StagingService
         When a WorldView2 PAN GeoTIFF AVRO message is placed on the SQS
         Then a WorldView2 PAN GeoTIFF should be discoverable
 
-    Scenario: Make aother WorldView2 PAN GeoTIFF image available for discovery
+    Scenario: Make another WorldView2 PAN GeoTIFF image available for discovery
         Given another WorldView2 PAN GeoTIFF is not already staged
         When another WorldView2 PAN GeoTIFF AVRO message is placed on the SQS
         Then another WorldView2 PAN GeoTIFF should be discoverable

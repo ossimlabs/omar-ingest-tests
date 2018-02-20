@@ -40,7 +40,20 @@ Given(~/^a (.*) (.*) (.*) image is not already indexed$/) {
             String file = it.properties.filename
             println "Removing ${file} from database"
             def removeRasterUrl = "${stagingService}/removeRaster?filename=${URLEncoder.encode(file, defaultCharset)}"
-            def command = "curl -X POST ${removeRasterUrl}"
+            def command = ["curl",
+                                    "-X",
+                                    "POST",
+                                    "${removeRasterUrl}"
+                                ]
+            /*
+                add an ArrayList called curlOptions to the config file if
+                addition info needs to be added to the curl command.
+            */
+            if (config?.curlOptions)
+            {
+                command.addAll(1, config.curlOptions)
+            }
+            println command
             def process = command.execute()
             process.waitFor()
             println "... Removed!"
@@ -66,7 +79,20 @@ When( ~/^a (.*) (.*) (.*) image is indexed into OMAR$/ ) {
     def filename = getFilename( location, subCategory, type )
 println "Trying to index filename ${filename}"
     def addRasterUrl = "${stagingService}/addRaster?buildOverviews=true&buildHistograms=true&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
-    def command = "curl -X POST ${addRasterUrl}"
+    def command = ["curl",
+                            "-X",
+                            "POST",
+                            "${addRasterUrl}"
+                        ]
+    /*
+        add an ArrayList called curlOptions to the config file if
+        addition info needs to be added to the curl command.
+    */
+    if (config?.curlOptions)
+    {
+        command.addAll(1, config.curlOptions)
+    }
+    println command
     println "CALLING POST ON URL: ${command}"
     def process = command.execute()
     process.waitFor()
@@ -91,4 +117,3 @@ Then(~/^a (.*) (.*) (.*) image should be available$/) {
 
     assert features.size() == 1
 }
-

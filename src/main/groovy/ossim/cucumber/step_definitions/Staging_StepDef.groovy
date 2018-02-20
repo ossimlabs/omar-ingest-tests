@@ -50,7 +50,20 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
                 def filename = it.properties.filename
                 println "Deleting ${filename}"
                 def removeRasterUrl = "${stagingService}/removeRaster?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
-                def command = "curl -X POST ${removeRasterUrl}"
+                def command = ["curl",
+                                        "-X",
+                                        "POST",
+                                        " ${removeRasterUrl}"
+                                    ]
+                /*
+                    add an ArrayList called curlOptions to the config file if
+                    addition info needs to be added to the curl command.
+                */
+                if (config?.curlOptions)
+                {
+                    command.addAll(1, config.curlOptions)
+                }
+                println command
                 def process = command.execute()
                 process.waitFor()
                 println "... Deleted!"
@@ -85,7 +98,19 @@ When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS$/) {
         def imageId = getImageId(format, index, platform, sensor)
         println "Sending ${imageId}'s AVRO message to the SQS"
 
-        def command = "curl -kLs ${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
+        def command = ["curl",
+                                "-kLs",
+                                "${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
+                            ]
+        /*
+            add an ArrayList called curlOptions to the config file if
+            addition info needs to be added to the curl command.
+        */
+        if (config?.curlOptions)
+        {
+            command.addAll(1, config.curlOptions)
+        }
+        println command
         def process = command.execute()
         process.waitFor()
 

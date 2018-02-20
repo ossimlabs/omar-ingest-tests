@@ -53,7 +53,7 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
                 def command = ["curl",
                                         "-X",
                                         "POST",
-                                        " ${removeRasterUrl}"
+                                        "${removeRasterUrl}"
                                     ]
                 /*
                     add an ArrayList called curlOptions to the config file if

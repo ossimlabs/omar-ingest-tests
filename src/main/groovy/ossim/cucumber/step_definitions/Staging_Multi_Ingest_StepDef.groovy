@@ -54,7 +54,7 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged - multi ingest$/) {
                 def command = ["curl",
                                         "-X",
                                         "POST",
-                                        " ${removeRasterUrl}"
+                                        "${removeRasterUrl}"
                                     ]
                 /*
                     add an ArrayList called curlOptions to the config file if

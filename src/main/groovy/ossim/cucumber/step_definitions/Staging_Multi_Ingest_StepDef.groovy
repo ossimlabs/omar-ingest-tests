@@ -101,14 +101,7 @@ When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS - multi ingest$/) 
                                 "-kLs",
                                 "${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
                             ]
-        /*
-            add an ArrayList called curlOptions to the config file if
-            addition info needs to be added to the curl command.
-        */
-        if (config?.curlOptions)
-        {
-            command.addAll(1, config.curlOptions)
-        }
+
         println command
         def process = command.execute()
         process.waitFor()

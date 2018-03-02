@@ -6,6 +6,7 @@ s3BucketUrl = "https://s3.amazonaws.com"
 stagingService = "${rbtcloudRootDir}/omar-stager/dataManager"
 wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"
+sqsTimestampName = "Timestamp"
 
 waitForStage = 5 // minutes to wait
 waitForStageMultiIngest = 30 // minutes to wait for all multi ingest images to stage
@@ -44,11 +45,6 @@ images = [
                         geotiff: [ "04DEC11050020-P2AS_R1C1-000000185964_01_P001" ]
                 ]
         ],
-        rapideye: [
-                msi: [
-                        geotiff: [ "2010-12-05T221358_RE2_3A-NAC_6683383_113276" ]
-                ]
-        ],
         "terrasar-x": [
                 sar: [
                         nitf20: [ "14SEP15TS0107001_100021_SL0023L_25N121E_001X___SVV_0101_OBS_IMAG" ]
@@ -64,6 +60,11 @@ images = [
                                 "16MAY02111607-P1BS-055998375010_01_P014"
                         ],
                         nitf20: [ "11MAR08WV010500008MAR11071429-P1BS-005707719010_04_P003" ]
+                ]
+        ],
+        local: [
+                hsi:[
+                        envi:"/data/hsi/2012-06-11/AM/ALPHA/2012-06-11_18-20-11/HSI/Scan_00007/2012-06-11_18-20-11.HSI.Scan_00007.scene.corrected.hsi"
                 ]
         ],
         remote: [

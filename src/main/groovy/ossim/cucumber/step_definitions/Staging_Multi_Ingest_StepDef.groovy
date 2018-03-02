@@ -1,6 +1,8 @@
 package ossim.cucumber.step_definitions
 
 import com.amazonaws.services.sqs.AmazonSQSClient
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import ossim.cucumber.config.CucumberConfig
 
 import ossim.cucumber.ogc.wfs.WFSCall
@@ -18,6 +20,7 @@ def imageBucket = config.s3Bucket
 def stagingService = config.stagingService
 def wfsServer = config.wfsServerProperty
 def waitForStageMultiIngest = config.waitForStageMultiIngest ?: 30
+def sqsTimestampName = config.sqsTimestampName
 Set<String> imageIds = new HashSet<>()
 
 def getImageId(format, index, platform, sensor)
@@ -48,7 +51,20 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged - multi ingest$/) {
                 def filename = it.properties.filename
                 println "Deleting ${filename}"
                 def removeRasterUrl = "${stagingService}/removeRaster?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
-                def command = "curl -X POST ${removeRasterUrl}"
+                def command = ["curl",
+                                        "-X",
+                                        "POST",
+                                        "${removeRasterUrl}"
+                                    ]
+                /*
+                    add an ArrayList called curlOptions to the config file if
+                    addition info needs to be added to the curl command.
+                */
+                if (config?.curlOptions)
+                {
+                    command.addAll(1, config.curlOptions)
+                }
+                println command
                 def process = command.execute()
                 process.waitFor()
                 println "... Deleted!"
@@ -73,7 +89,6 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged - multi ingest$/) {
             println "... Not staged yet."
         }
 
-
         assert features.size() == 0
 }
 
@@ -82,15 +97,21 @@ When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS - multi ingest$/) 
 
         def imageId = getImageId(format, index, platform, sensor)
         println "Sending ${imageId}'s AVRO message to the SQS"
+        def command = ["curl",
+                                "-kLs",
+                                "${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
+                            ]
 
-        def command = "curl -kLs ${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
+        println command
         def process = command.execute()
         process.waitFor()
         def text = process.getText()
-
+        def json = new JsonSlurper().parseText(text)
+        json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
+        def newSqsText = new JsonBuilder(json).toString()
 
         def sqs = AmazonSQSClient.newInstance()
-        sqs.sendMessage(config.sqsStagingQueue, text)
+        sqs.sendMessage(config.sqsStagingQueue, newSqsText)
 
         println "... Sent!"
 }

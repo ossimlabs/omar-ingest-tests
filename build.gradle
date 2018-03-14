@@ -49,6 +49,10 @@ task ingest() {
         javaexec {
             main = "cucumber.api.cli.Main"
             classpath = configurations.cucumberRuntime
+            if(System.env?.JVM_ARGS){
+                println System.env?.JVM_ARGS
+                jvmArgs = System.env.JVM_ARGS.split(" ").collect(){it.toString()}
+            }
             args = [
                 "--tags",
                 "@local_staging_service, @staging_service, @direct_s3_staging_service",

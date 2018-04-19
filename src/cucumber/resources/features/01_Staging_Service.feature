@@ -59,11 +59,10 @@ Feature: StagingService
 #        When a RapidEye MSI GeoTIFF AVRO message is placed on the SQS
 #        Then a RapidEye MSI GeoTIFF should be discoverable
 
-#  Disable use of TerraSAR image until NITF's larger than 4k X 4k pixels are allowed.
-#    Scenario: [STG-10] Make a TerraSAR-X SAR NITF20 image available for discovery
-#        Given a TerraSAR-X SAR NITF20 is not already staged
-#        When a TerraSAR-X SAR NITF20 AVRO message is placed on the SQS
-#        Then a TerraSAR-X SAR NITF20 should be discoverable
+    Scenario: [STG-10] Make a TerraSAR-X SAR NITF20 image available for discovery
+        Given a TerraSAR-X SAR NITF20 is not already staged
+        When a TerraSAR-X SAR NITF20 AVRO message is placed on the SQS
+        Then a TerraSAR-X SAR NITF20 should be discoverable
 
     Scenario: [STG-13] Make a WorldView2 MSI GeoTIFF image available for discovery
         Given a WorldView2 MSI GeoTIFF is not already staged

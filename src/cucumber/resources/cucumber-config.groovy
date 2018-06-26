@@ -1,8 +1,22 @@
-rbtcloudRootDir = "https://omar-dev.ossim.io"
 sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-dev"
 s3Bucket = "o2-test-data/Standard_test_imagery_set"
 s3BucketUrl = "https://s3.amazonaws.com"
 
+rbtcloudRootDir = "NOT_ASSIGNED"
+targetDeployment = System.getenv("TEST_PROFILE")
+switch(targetDeployment) {
+   case dev:
+      rbtcloudRootDir = "https://omar-dev.ossim.io"
+      break
+   case stage:
+      rbtcloudRootDir = "https://omar-stage.ossim.io"
+      break
+   case prod:
+      rbtcloudRootDir = "https://omar-prod.ossim.io"
+      break
+   default:
+      break
+}
 stagingService = "${rbtcloudRootDir}/omar-stager/dataManager"
 wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"

@@ -5,13 +5,13 @@ s3BucketUrl = "https://s3.amazonaws.com"
 rbtcloudRootDir = "NOT_ASSIGNED"
 targetDeployment = System.getenv("TEST_PROFILE")
 switch(targetDeployment) {
-   case dev:
+   case "dev":
       rbtcloudRootDir = "https://omar-dev.ossim.io"
       break
-   case stage:
+   case "stage":
       rbtcloudRootDir = "https://omar-stage.ossim.io"
       break
-   case prod:
+   case "prod":
       rbtcloudRootDir = "https://omar-prod.ossim.io"
       break
    default:

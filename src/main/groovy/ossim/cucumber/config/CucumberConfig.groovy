@@ -43,7 +43,6 @@ class CucumberConfig
             {
                 resourceFile = null
             }
-            //resourceFile = CucumberConfig.class.getResource("cucumber-config.groovy");
             if (!resourceFile)
             {
                 resourceFile = new File("src/cucumber/resources/cucumber-config.groovy").toURI().toURL()

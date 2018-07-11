@@ -51,6 +51,7 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
                 println "Deleting ${filename}"
                 def removeRasterUrl = "${stagingService}/removeRaster?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
                 def command = ["curl",
+                                        "-u",
                                         "${config.curlUname}",
                                         "-X",
                                         "POST",

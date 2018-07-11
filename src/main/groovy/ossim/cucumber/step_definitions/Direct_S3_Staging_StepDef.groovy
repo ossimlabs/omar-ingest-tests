@@ -41,6 +41,7 @@ Given(~/^an AWS Remote (.*) (.*) (.*) image is not already indexed$/) {
             println "Removing ${file} from database"
             def removeRasterUrl = "${stagingService}/removeRaster?filename=${URLEncoder.encode(file, defaultCharset)}"
             def command = ["curl",
+                                    "-u",
                                     "${config.curlUname}",
                                     "-X",
                                     "POST",

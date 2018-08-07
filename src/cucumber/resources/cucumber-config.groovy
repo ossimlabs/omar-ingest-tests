@@ -17,6 +17,14 @@ switch(targetDeployment) {
       rbtcloudRootDir = "https://omar-prod.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
       break
+   case "blue":
+      rbtcloudRootDir = "https://omar-blue.ossim.io"
+      sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
+      break
+   case "green":
+      rbtcloudRootDir = "https://omar-green.ossim.io"
+      sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
+      break
    case "rel":
       rbtcloudRootDir = "https://omar-rel.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-release"

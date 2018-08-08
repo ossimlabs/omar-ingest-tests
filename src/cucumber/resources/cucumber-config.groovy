@@ -1,9 +1,16 @@
+targetDeployment = System.getenv("TARGET_DEPLOYMENT")
+if (!targetDeployment) {
+   targetDeployment = "dev"
+}
+domainName = System.getenv("DOMAIN_NAME")
+if (!domainName) {
+   domainName = "ossim.io"
+}
+
 s3Bucket = "o2-test-data/Standard_test_imagery_set"
 s3BucketUrl = "https://s3.amazonaws.com"
 
 sqsStagingQueue = "NOT_ASSIGNED"
-targetDeployment = System.getenv("TEST_PROFILE")
-domainName = System.getenv("DOMAIN_NAME")
 rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
 switch(targetDeployment) {
    case "dev":

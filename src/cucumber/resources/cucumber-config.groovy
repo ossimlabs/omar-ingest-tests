@@ -2,31 +2,26 @@ s3Bucket = "o2-test-data/Standard_test_imagery_set"
 s3BucketUrl = "https://s3.amazonaws.com"
 
 sqsStagingQueue = "NOT_ASSIGNED"
-rbtcloudRootDir = "NOT_ASSIGNED"
 targetDeployment = System.getenv("TEST_PROFILE")
+domainName = System.getenv("DOMAIN_NAME")
+rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
 switch(targetDeployment) {
    case "dev":
-      rbtcloudRootDir = "https://omar-dev.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-dev"
       break
    case "stage":
-      rbtcloudRootDir = "https://omar-stage.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-stage"
       break
    case "prod":
-      rbtcloudRootDir = "https://omar-prod.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
       break
    case "blue":
-      rbtcloudRootDir = "https://omar-blue.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
       break
    case "green":
-      rbtcloudRootDir = "https://omar-green.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-prod"
       break
    case "rel":
-      rbtcloudRootDir = "https://omar-rel.ossim.io"
       sqsStagingQueue = "https://sqs.us-east-1.amazonaws.com/320588532383/avro-release"
       break
    default:

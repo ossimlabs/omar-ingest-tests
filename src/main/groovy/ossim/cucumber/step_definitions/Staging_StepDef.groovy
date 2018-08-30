@@ -6,6 +6,7 @@ import groovy.json.JsonSlurper
 import ossim.cucumber.config.CucumberConfig
 
 import ossim.cucumber.ogc.wfs.WFSCall
+import ossim.cucumber.ogc.wms.WMSCall
 
 import java.nio.charset.Charset
 
@@ -18,9 +19,14 @@ config = CucumberConfig.config
 def bucketUrl = config.s3BucketUrl
 def imageBucket = config.s3Bucket
 def stagingService = config.stagingService
+def wmsServer = config.wmsServerProperty
 def wfsServer = config.wfsServerProperty
 def waitForStage = config.waitForStage ?: 10
 def sqsTimestampName = config.sqsTimestampName
+def imageSpaceUrl = config.imageSpaceUrl
+
+def imageId
+def filepath = ""
 
 def getImageId(format, index, platform, sensor)
 {
@@ -32,10 +38,23 @@ def getImageId(format, index, platform, sensor)
     return config.images[platform][sensor][format][index == "another" ? 1 : 0]
 }
 
+def downloadImage(String remoteUrl)
+{
+    File tmpfile = File.createTempFile("thumbnail", ".tmp")
+    tmpfile.deleteOnExit()
+    def file = new FileOutputStream(tmpfile)
+    def out = new BufferedOutputStream(file)
+    out << new URL(remoteUrl).openStream()
+    out.close()
+    return tmpfile
+}
+
 Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
     String index, String platform, String sensor, String format ->
 
-        def imageId = getImageId(format, index, platform, sensor)
+        println "==========="
+
+        imageId = getImageId(format, index, platform, sensor)
         println "Searching for ${imageId}"
 
         def filter = "filename LIKE '%${imageId}%'"
@@ -94,10 +113,8 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
         assert features.size() == 0
 }
 
-When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS$/) {
-    String index, String platform, String sensor, String format ->
-
-        def imageId = getImageId(format, index, platform, sensor)
+When(~/^its AVRO message is placed on the SQS$/) {
+    ->
         println "Sending ${imageId}'s AVRO message to the SQS"
 
         def command = ["curl",
@@ -120,10 +137,8 @@ When(~/^(.*) (.*) (.*) (.*) AVRO message is placed on the SQS$/) {
         println "... Sent!"
 }
 
-Then(~/^(.*) (.*) (.*) (.*) should be discoverable$/) {
-    String index, String platform, String sensor, String format ->
-
-        def imageId = getImageId(format, index, platform, sensor)
+Then(~/^it should be discoverable$/) {
+    ->
         def features
 
         println new Date()
@@ -148,6 +163,32 @@ Then(~/^(.*) (.*) (.*) (.*) should be discoverable$/) {
             }
         }
 
-
         assert features.size() == 1
+
+        // Save the file path for later
+        filepath = features[0]["properties"]["filename"]
+        
+}
+
+And(~/^it should have a thumbnail$/) {
+    ->
+        // Download the file and check that its size is greater than zero
+        println "Downloading and checking thumbnail..."
+        def thumbnail = downloadImage("${imageSpaceUrl}/getThumbnail?&filename=${filepath}")
+        assert thumbnail.length() > 0
+        println "... it has a thumbnail!"
+}
+
+And(~/^a WMS call should produce an image$/) {
+    ->
+        println "Making WMS call..."
+        def filter = "entry_id='0' and filename LIKE '%${imageId}%'"
+        def wmsCall = new WMSCall()
+        def bbox = wmsCall.getBBox(wfsServer, filter)
+        wmsReturnImage = wmsCall.getImage(wmsServer, 256, 256, "png", bbox, filter)
+
+        println "Downloading and checking image..."
+        def imagePng = downloadImage(wmsReturnImage.toString())
+        assert imagePng.length() > 0
+        println "... image exists!"
 }

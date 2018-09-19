@@ -38,7 +38,9 @@ stagingService = "${rbtcloudRootDir}/omar-stager/dataManager"
 wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"
 sqsTimestampName = "Timestamp"
-curlUname="admin:P@ssw()rdP@ssw()rd"
+uname = System.getenv("CURL_USER_NAME")
+pword = System.getenv("CURL_PASSWORD")
+curlUname="${uname}:${pword}"
 
 println("\nOMAR URL being tested: ${rbtcloudRootDir}\n")
 

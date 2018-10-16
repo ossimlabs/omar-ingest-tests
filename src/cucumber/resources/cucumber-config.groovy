@@ -35,8 +35,10 @@ switch(targetDeployment) {
       break
 }
 stagingService = "${rbtcloudRootDir}/omar-stager/dataManager"
+wmsServerProperty = "${rbtcloudRootDir}/omar-wms/wms"
 wfsServerProperty = "${rbtcloudRootDir}/omar-wfs/wfs"
 wfsUrl = "${rbtcloudRootDir}/omar-wfs"
+imageSpaceUrl = "${rbtcloudRootDir}/omar-oms/imageSpace"
 sqsTimestampName = "Timestamp"
 uname = System.getenv("CURL_USER_NAME")
 pword = System.getenv("CURL_PASSWORD")

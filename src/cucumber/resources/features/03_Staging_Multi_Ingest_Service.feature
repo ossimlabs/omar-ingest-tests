@@ -2,9 +2,9 @@
 Feature: StagingService
 
 Scenario Outline: [MSTG-01] Make a given IMAGE available for discovery
-  Given the image <image-name> is not already staged
-  When the image <image-name> avro message is placed on the SQS
-  Then the image <image-name> should be discoverable
+  Given the image <image-name> is not already staged - multi ingest
+  When the image <image-name> AVRO message is placed on the SQS - multi ingest
+  Then the image <image-name> should be discoverable - multi ingest
 
   Examples:
     | image-name |

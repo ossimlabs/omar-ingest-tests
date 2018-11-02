@@ -60,6 +60,17 @@ HashMap getImageInfo(String id) {
     return fileInfo
 }
 
+def downloadImage(String remoteUrl)
+{
+    File tmpfile = File.createTempFile("thumbnail", ".tmp")
+    tmpfile.deleteOnExit()
+    def file = new FileOutputStream(tmpfile)
+    def out = new BufferedOutputStream(file)
+    out << new URL(remoteUrl).openStream()
+    out.close()
+    return tmpfile
+}
+
 Given(~/^the image (.*) is not already staged$/) { String image ->
 
   println "==========="

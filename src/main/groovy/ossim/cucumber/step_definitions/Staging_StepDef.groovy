@@ -1,8 +1,10 @@
 package ossim.cucumber.step_definitions
 
 import com.amazonaws.services.sqs.AmazonSQSClient
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+
 import ossim.cucumber.config.CucumberConfig
 
 import ossim.cucumber.ogc.wfs.WFSCall
@@ -27,151 +29,148 @@ def imageSpaceUrl = config.imageSpaceUrl
 
 def imageId
 def filepath = ""
-
-def getImageId(format, index, platform, sensor)
-{
-    format = format.toLowerCase()
-    platform = platform.toLowerCase()
-    sensor = sensor.toLowerCase()
+HashMap imageInfo
 
 
-    return config.images[platform][sensor][format][index == "another" ? 1 : 0]
+msg_image_id_field = config.image_id_field_name
+msg_observation_date_time_field = config.observation_date_time_field_name
+msg_url_field = config.url_field_name
+
+String getAvroMessage(String imageId, String url, String observationDateTime) {
+  String messageStr= """{"Message":{\"${msg_image_id_field}\":\"${imageId}\",\"${msg_observation_date_time_field }\":\"${observationDateTime}\",\"${msg_url_field}\":\"${url}\"}}"""
+  println messageStr
+  return messageStr
 }
 
-def downloadImage(String remoteUrl)
-{
-    File tmpfile = File.createTempFile("thumbnail", ".tmp")
-    tmpfile.deleteOnExit()
-    def file = new FileOutputStream(tmpfile)
-    def out = new BufferedOutputStream(file)
-    out << new URL(remoteUrl).openStream()
-    out.close()
-    return tmpfile
-}
-
-Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
-    String index, String platform, String sensor, String format ->
-
-        println "==========="
-
-        imageId = getImageId(format, index, platform, sensor)
-        println "Searching for ${imageId}"
-
-        def filter = "filename LIKE '%${imageId}%'"
-        def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-        def features = wfsQuery.result.features
-
-        // if any files are found, delete them
-        if (features.size() > 0)
-        {
-            println "... It's already staged!"
-            features.each() {
-                def filename = it.properties.filename
-                println "Deleting ${filename}"
-                def removeRasterUrl = "${stagingService}/removeRaster?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
-                def command = ["curl",
-                                        "-u",
-                                        "${config.curlUname}",
-                                        "-X",
-                                        "POST",
-                                        "${removeRasterUrl}"
-                                    ]
-                /*
-                    add an ArrayList called curlOptions to the config file if
-                    addition info needs to be added to the curl command.
-                */
-                if (config?.curlOptions)
+HashMap getImageInfo(String id) {
+    HashMap fileInfo = [:]
+    config.image_files.each{ imagesList -> 
+        imagesList.getValue().images.each{ imageData ->
+            imageData.each { imageInformation ->
+                if (id == imageInformation.getValue().image_id)
                 {
-                    command.addAll(1, config.curlOptions)
+                    fileInfo.image_id = imageInformation.getValue().image_id.toString()
+                    fileInfo.observation_time = imageInformation.getValue().observation_time.toString()
+                    fileInfo.url = imageInformation.getValue().url.toString()
                 }
-                println command
-                def process = command.execute()
-                process.waitFor()
-                println "... Deleted!"
             }
+        }         
+    }
 
-            // redo the WFS query to see if the files have been removed
-            println "Checking to make sure they are deleted..."
-            wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-
-            features = wfsQuery.result.features
-            if (features.size() == 0)
-            {
-                println "... Yup, it's gone!"
-            }
-            else
-            {
-                println "... Uh oh, doesn't look like it was deleted."
-            }
-        }
-        else
-        {
-            println "... Not staged yet."
-        }
-
-
-        assert features.size() == 0
+    return fileInfo
 }
 
-When(~/^its AVRO message is placed on the SQS$/) {
-    ->
-        println "Sending ${imageId}'s AVRO message to the SQS"
+Given(~/^the image (.*) is not already staged$/) { String image ->
 
-        def command = ["curl",
-                                "-kLs",
-                                "${bucketUrl}/${imageBucket}/json_files/${imageId}.json"
-                            ]
+  println "==========="
 
-        println command
-        def process = command.execute()
-        process.waitFor()
+  imageInfo = getImageInfo(image)
+  imageId = imageInfo.image_id
+  println "Searching for ${imageId}"
 
-        def text = process.getText()
-        def json = new JsonSlurper().parseText(text)
-        json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
-        def newSqsText = new JsonBuilder(json).toString()
+  def filter = "filename LIKE '%${imageId}%'"
+  def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
+  def features = wfsQuery.result.features
 
-        def sqs = AmazonSQSClient.newInstance()
-        sqs.sendMessage(config.sqsStagingQueue, newSqsText)
+  // if any files are found, delete them
+  if (features.size() > 0)
+  {
+      println "... It's already staged!"
+      features.each() {
+          def filename = it.properties.filename
+          println "Deleting ${filename}"
+          def removeRasterUrl = "${stagingService}/removeRaster?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
+          def command = ["curl",
+                                  "-u",
+                                  "${config.curlUname}",
+                                  "-X",
+                                  "POST",
+                                  "${removeRasterUrl}"
+                              ]
+          /*
+              add an ArrayList called curlOptions to the config file if
+              addition info needs to be added to the curl command.
+          */
+          if (config?.curlOptions)
+          {
+              command.addAll(1, config.curlOptions)
+          }
+          println command
+          def process = command.execute()
+          process.waitFor()
+          println "... Deleted!"
+      }
 
-        println "... Sent!"
+      // redo the WFS query to see if the files have been removed
+      println "Checking to make sure they are deleted..."
+      wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
+
+      features = wfsQuery.result.features
+      if (features.size() == 0)
+      {
+          println "... Yup, it's gone!"
+      }
+      else
+      {
+          println "... Uh oh, doesn't look like it was deleted."
+      }
+  }
+  else
+  {
+      println "... Not staged yet."
+  }
+
+
+  assert features.size() == 0
 }
 
-Then(~/^it should be discoverable$/) {
-    ->
-        def features
+When(~/^the image (.*) avro message is placed on the SQS$/) { String image ->
+  println "Sending ${imageId}'s AVRO message to the SQS"
 
-        println new Date()
-        println "Has ${imageId} been ingested yet?..."
+  String text = getAvroMessage(imageInfo.image_id, imageInfo.url, imageInfo.observation_time)
 
-        def timer = 60 * waitForStage
-        while (timer > 0)
-        {
-            sleep(5000)
-            def filter = "filename LIKE '%${imageId}%'"
-            def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-            features = wfsQuery.result.features
-            if (features.size() > 0)
-            {
-                println "... Yes!!!"
-                timer = 0
-            }
-            else
-            {
-                print "... "
-                timer -= 5
-            }
-        }
+  def json = new JsonSlurper().parseText(text)
+  json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
+  def newSqsText = new JsonBuilder(json).toString()
 
-        assert features.size() == 1
+  def sqs = AmazonSQSClient.newInstance()
+  sqs.sendMessage(config.sqsStagingQueue, newSqsText)
 
-        // Save the file path for later
-        filepath = features[0]["properties"]["filename"]
-        
+  println "... Sent!"
 }
 
-And(~/^it should have a thumbnail$/) {
-    ->
+Then(~/^the image (.*) should be discoverable$/) { String image ->
+  def features
+
+  println new Date()
+  println "Has ${imageId} been ingested yet?..."
+
+  def timer = 60 * waitForStage
+  while (timer > 0)
+  {
+      sleep(5000)
+      def filter = "filename LIKE '%${imageId}%'"
+      def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
+      features = wfsQuery.result.features
+      if (features.size() > 0)
+      {
+          println "... Yes!!!"
+          timer = 0
+      }
+      else
+      {
+          print "... "
+          timer -= 5
+      }
+  }
+
+  assert features.size() == 1
+
+  // Save the file path for later
+  filepath = features[0]["properties"]["filename"]
+}
+
+And(~/^it should have a thumbnail$/) { ->
         // Download the file and check that its size is greater than zero
         println "Downloading and checking thumbnail..."
         def thumbnail = downloadImage("${imageSpaceUrl}/getThumbnail?&filename=${filepath}")
@@ -179,8 +178,7 @@ And(~/^it should have a thumbnail$/) {
         println "... it has a thumbnail!"
 }
 
-And(~/^a WMS call should produce an image$/) {
-    ->
+And(~/^a WMS call should produce an image$/) { ->
         println "Making WMS call..."
         def filter = "entry_id='0' and filename LIKE '%${imageId}%'"
         def wmsCall = new WMSCall()

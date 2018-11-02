@@ -1,5 +1,8 @@
 package ossim.cucumber.config
 
+import groovy.text.*
+import groovy.json.JsonSlurper
+
 class CucumberConfig
 {
     static def config
@@ -53,6 +56,35 @@ class CucumberConfig
         {
             def slurper = new ConfigSlurper()
             config = slurper.parse(resourceFile)
+        }
+
+        createFeatureFile()
+    }
+    
+    static void createFeatureFile() {
+        def config =  getConfig()
+        config.featureTemplateFiles.templates.each{ files ->
+            List list = []
+            File templateFile = new File("${files.getValue().template_file}")
+            File featureFile =  new File("${files.getValue().feature_file}")
+            
+            config.image_files.each{ imagesList -> 
+                if(files.getValue().data == imagesList.getKey().toString())
+                {
+                    imagesList.getValue().images.each{ imageData ->
+                        imageData.each { imageInfo ->
+                            list.push(imageInfo.getValue().image_id)
+                        }
+                    }
+                
+                }             
+            }
+
+            HashMap imageList = ["files":list]
+            SimpleTemplateEngine engine = new SimpleTemplateEngine()
+            Template template = engine.createTemplate(templateFile)
+            Writable writable = template.make(imageList)
+            featureFile.write(writable.toString())
         }
     }
 }

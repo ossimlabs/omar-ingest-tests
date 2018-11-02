@@ -14,19 +14,34 @@ String defaultCharset = Charset.defaultCharset().displayName()
 config = CucumberConfig.config
 def stagingService = config.stagingService
 
-String getFilename(location, subCategory , type ) {
-    location = location.toLowerCase()
-    subCategory = subCategory.toLowerCase()
-    type = type.toLowerCase()
+def imageId
+HashMap imageInfo
 
+HashMap getImageInfo(String id) {
+    HashMap fileInfo = [:]
+    config.image_files.each{ imagesList -> 
+        imagesList.getValue().images.each{ imageData ->
+            imageData.each { imageInformation ->
+                if (id == imageInformation.getValue().image_id)
+                {
+                    fileInfo.image_id = imageInformation.getValue().image_id.toString()
+                    fileInfo.observation_time = imageInformation.getValue().observation_time.toString()
+                    fileInfo.url = imageInformation.getValue().url.toString()
+                }
+            }
+        }         
+    }
 
-    return config.images."${location}"."${subCategory}"."${type}"
+    return fileInfo
 }
 
-Given(~/^a (.*) (.*) (.*) image is not already indexed$/) {
-    String index, String platform, String remoteType ->
+Given(~/^the image (.*) is not already indexed$/) { String image ->
 
-    def filename = getFilename( index, platform, remoteType )
+    imageInfo = getImageInfo(imageId)
+    imageId = imageInfo.image_id
+
+    def filename = imageInfo.url
+
     println "Searching for ${filename}"
 
     def filter = "filename = '${filename}'"
@@ -75,10 +90,9 @@ Given(~/^a (.*) (.*) (.*) image is not already indexed$/) {
     assert features.size() == 0
 }
 
-When( ~/^a (.*) (.*) (.*) image is indexed into OMAR$/ ) {
-    String location, String subCategory, String type ->
+When( ~/^the image (.*) is indexed into OMAR$/ ) { String image ->
 
-    def filename = getFilename( location, subCategory, type )
+    def filename = imageInfo.url
 println "Trying to index filename ${filename}"
     def addRasterUrl = "${stagingService}/addRaster?buildOverviews=true&buildHistograms=true&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",
@@ -102,9 +116,8 @@ println "Trying to index filename ${filename}"
     println "addRaster Result: ${process.text}"
 }
 
-Then(~/^a (.*) (.*) (.*) image should be available$/) {
-    String location, String subCategory, String type ->
-    def filename = getFilename( location, subCategory, type )
+Then(~/^the image (.*) should be available$/) { String image ->
+    def filename = imageInfo.url
     def features
 
     println new Date()

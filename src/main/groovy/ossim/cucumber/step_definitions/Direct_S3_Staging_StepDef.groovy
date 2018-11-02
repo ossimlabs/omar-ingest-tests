@@ -86,7 +86,7 @@ Given(~/^the image (.*) is not already indexed - direct s3 ingest$/) { String im
     assert features.size() == 0
 }
 
-When( ~/^the (.*) image is indexed into OMAR - direct s3 ingest$/ ) { String image ->
+When( ~/^the image (.*) is indexed into OMAR - direct s3 ingest$/ ) { String image ->
 
     def filename = imageInfo.url
     def addRasterUrl = "${stagingService}/addRaster?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
@@ -110,7 +110,7 @@ When( ~/^the (.*) image is indexed into OMAR - direct s3 ingest$/ ) { String ima
     println "addRaster Result: ${process.text}"
 }
 
-Then(~/^the (.*) image should be available - direct s3 ingest$/) { String image ->
+Then(~/^the image (.*) should be available - direct s3 ingest$/) { String image ->
 
     def filename = imageInfo.url
     def features

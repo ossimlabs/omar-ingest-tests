@@ -67,6 +67,7 @@ class WFSCall
 
         String wfsParamsString = urlParamsToString(wfsParams)
         String wfsUrlString = "${wfsServer}/getFeature?${wfsParamsString}"
+        println "Calling WFS with URL: $wfsUrlString"
         URL wfsText = new URL(wfsUrlString)
 
         text = wfsText.text

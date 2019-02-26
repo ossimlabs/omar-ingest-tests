@@ -5,8 +5,7 @@ properties([
         booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run')
     ]),
     pipelineTriggers([
-            [$class: "GitHubPushTrigger"],
-            pollSCM('H/2 * * * *')
+            [$class: "GitHubPushTrigger"]
     ])
 ])
 

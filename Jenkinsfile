@@ -36,12 +36,18 @@ node("${BUILD_NODE}"){
     try {
         stage ("Run Test")
         {
-            sh """
-                echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.txt"
-                export DISPLAY=":1"
-                gradle ingest
-            """
+            withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                        credentialsId: 'curlCredentials',
+                        usernameVariable: 'CURL_USER_NAME',
+                        passwordVariable: 'CURL_PASSWORD']])
+            {
+                sh """
+                    echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
+                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.txt"
+                    export DISPLAY=":1"
+                    gradle ingest
+                """
+            }
         }
     } finally {
         stage("Archive"){

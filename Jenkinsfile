@@ -30,7 +30,7 @@ node("${BUILD_NODE}"){
     {
         step ([$class: "CopyArtifact",
             projectName: "ossim-ci",
-            filter: "cucumber-config-ingest.txt"])
+            filter: "cucumber-config-ingest.groovy"])
     }    
 
     try {
@@ -43,7 +43,7 @@ node("${BUILD_NODE}"){
             {
                 sh """
                     echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.txt"
+                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.groovy"
                     export DISPLAY=":1"
                     gradle ingest
                 """
@@ -51,10 +51,8 @@ node("${BUILD_NODE}"){
         }
     } finally {
         stage("Archive"){
-            dir("${env.WORKSPACE}"){
-                sh "cp build/ingest.json ."
-                archiveArtifacts "ingest.json"
-            }
+            sh "cp build/ingest.json ."
+            archiveArtifacts "ingest.json"
         }
 
         stage("Publish Report") {

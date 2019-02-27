@@ -30,7 +30,7 @@ node("${BUILD_NODE}"){
     {
         step ([$class: "CopyArtifact",
             projectName: "ossim-ci",
-            filter: "cucumber-config-ingest.groovy"])
+            filter: "cucumber-configs/cucumber-config-ingest.groovy"])
     }    
 
     try {

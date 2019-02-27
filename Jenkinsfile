@@ -2,13 +2,25 @@ properties([
     parameters ([
         string(name: 'BUILD_NODE', defaultValue: 'ossim-test-build', description: 'The build node to run on'),
         string(name: 'TARGET_DEPLOYMENT', defaultValue: 'dev', description: 'The deployment to run the tests against'),
-        booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run')
+        booleanParam(name: 'MULTI_INGEST', defaultValue: false, description: 'Run a multi-ingest test'),
+        booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
     ]),
     pipelineTriggers([
             [$class: "GitHubPushTrigger"]
     ]),
     disableConcurrentBuilds()
 ])
+
+String gradleTask
+String outputJson
+
+if ("${MULTI_INGEST}" == "true") {
+    gradleTask = "ingestMultipleImages"
+    outputJson = "ingestMultipleImages.json"
+} else {
+    gradleTask = "ingest"
+    outputJson = "ingest.json"
+}
 
 node("${BUILD_NODE}"){
 
@@ -47,14 +59,14 @@ node("${BUILD_NODE}"){
                     echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
                     export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.groovy"
                     export DISPLAY=":1"
-                    gradle ingest
+                    gradle ${gradleTask}
                 """
             }
         }
     } finally {
         stage("Archive"){
-            sh "cp build/ingest.json ."
-            archiveArtifacts "ingest.json"
+            sh "cp build/${outputJson} ."
+            archiveArtifacts "${outputJson}"
         }
 
         stage("Publish Report") {
@@ -68,7 +80,7 @@ node("${BUILD_NODE}"){
                 pendingFails: false,
                 skippedFails: false,
                 undefinedFails: false])
-            cucumberSlackSend channel: '#ossimlabs_jenkins', json: "build/ingest.json"
+            cucumberSlackSend channel: '#ossimlabs_jenkins', json: "build/${outputJson}"
         }
     }
         

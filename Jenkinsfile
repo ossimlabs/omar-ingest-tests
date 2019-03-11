@@ -37,18 +37,14 @@ node("${BUILD_NODE}"){
                 projectName: o2ArtifactProject,
                 filter: "common-variables.groovy",
                 flatten: true])
+            step ([$class: "CopyArtifact",
+                projectName: o2ArtifactProject,
+                filter: "cucumber-configs/cucumber-config-ingest.groovy",
+                flatten: true])
         }
 
         load "common-variables.groovy"
     }
-
-    stage("Pull Artifacts")
-    {
-        step ([$class: "CopyArtifact",
-            projectName: "ossim-ci",
-            filter: "cucumber-configs/cucumber-config-ingest.groovy",
-            flatten: true])
-    }    
 
     try {
         stage ("Run Test")
@@ -85,11 +81,10 @@ node("${BUILD_NODE}"){
                 undefinedFails: false])
             cucumberSlackSend channel: '#ossimlabs_jenkins', json: "build/${outputJson}"
         }
-    }
-        
-    stage("Clean Workspace")
-    {
-        if ("${CLEAN_WORKSPACE}" == "true")
+       
+        stage("Clean Workspace") {
+            if ("${CLEAN_WORKSPACE}" == "true")
             step([$class: 'WsCleanup'])
+        }
     }
 }

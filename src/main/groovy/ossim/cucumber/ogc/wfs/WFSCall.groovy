@@ -60,7 +60,7 @@ class WFSCall
                 typeName    : "omar:raster_entry",
                 resultType  : "results",
                 outputFormat: outputFormat,
-                filter      : URLEncoder.encode(filter, Charset.defaultCharset().displayName()),
+                filter      : URLEncoder.encode(filter, "UTF-8"),
                 maxFeatures : maxFeatures,
                 startIndex  : 0
         ]

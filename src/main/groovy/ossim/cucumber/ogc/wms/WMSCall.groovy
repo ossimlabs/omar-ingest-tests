@@ -28,7 +28,7 @@ class WMSCall {
         FORMAT:"image/${return_image_type}",
         STYLES:URLEncoder.encode("""{"nullPixelFlip": false}""", Charset.defaultCharset().displayName()),
         TRANSPARENT:true,
-        FILTER: URLEncoder.encode(filter, Charset.defaultCharset().displayName())
+        FILTER: URLEncoder.encode(filter, "UTF-8")
       ]
 
       String wmsParamsString = urlParamsToString(wmsParams)

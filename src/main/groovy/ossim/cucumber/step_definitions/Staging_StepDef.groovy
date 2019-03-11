@@ -13,7 +13,7 @@ import java.nio.charset.Charset
 this.metaClass.mixin(cucumber.api.groovy.Hooks)
 this.metaClass.mixin(cucumber.api.groovy.EN)
 
-String defaultCharset = Charset.defaultCharset().displayName()
+String defaultCharset = "UTF-8"
 
 config = CucumberConfig.config
 def bucketUrl = config.s3BucketUrl

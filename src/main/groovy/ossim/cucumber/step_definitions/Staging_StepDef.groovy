@@ -174,7 +174,7 @@ And(~/^it should have a thumbnail$/) {
     ->
         // Download the file and check that its size is greater than zero
         println "Downloading and checking thumbnail..."
-        def thumbnail = downloadImage("${imageSpaceUrl}/getThumbnail?&filename='${filepath}'")
+        def thumbnail = downloadImage("${imageSpaceUrl}/getThumbnail?&filename=${filepath}")
         assert thumbnail.length() > 0
         println "... it has a thumbnail!"
 }

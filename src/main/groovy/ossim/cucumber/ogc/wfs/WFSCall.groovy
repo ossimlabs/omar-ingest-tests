@@ -60,13 +60,14 @@ class WFSCall
                 typeName    : "omar:raster_entry",
                 resultType  : "results",
                 outputFormat: outputFormat,
-                filter      : URLEncoder.encode(filter, Charset.defaultCharset().displayName()),
+                filter      : URLEncoder.encode(filter, "UTF-8"),
                 maxFeatures : maxFeatures,
                 startIndex  : 0
         ]
 
         String wfsParamsString = urlParamsToString(wfsParams)
         String wfsUrlString = "${wfsServer}/getFeature?${wfsParamsString}"
+        println "Calling WFS with URL: $wfsUrlString"
         URL wfsText = new URL(wfsUrlString)
 
         text = wfsText.text

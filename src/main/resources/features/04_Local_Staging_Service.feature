@@ -8,4 +8,3 @@ Scenario Outline: [LSTG-01] Make a given IMAGE available for discovery
 
   Examples:
     | image-name |
-    | 2012-06-11_18-20-11.HSI.Scan_00007.scene.corrected.hsi |

@@ -1,10 +1,10 @@
-package ossim.cucumber.ogc.wms
+package omar.cucumber.ogc.wms
 
 import groovy.json.JsonSlurper
 import com.vividsolutions.jts.io.WKTReader
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
-import ossim.cucumber.ogc.wfs.WFSCall
+import omar.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
 

@@ -1,8 +1,12 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
 Thumbs.db
 .DS_Store
-.gradle
-build/
-classes/
+classes
 .idea
 *.iml
 *.ipr
@@ -10,3 +14,6 @@ classes/
 .project
 .settings
 .classpath
+.vscode
+bin
+tomcat.*

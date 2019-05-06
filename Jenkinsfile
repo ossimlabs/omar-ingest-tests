@@ -16,11 +16,11 @@ String gradleTask
 String outputJson
 
 if ("${MULTI_INGEST}" == "true") {
-    gradleTask = "ingestMultipleImages"
     outputJson = "ingestMultipleImages.json"
+    gradleTask = "gradle run -Pmulti=true"
 } else {
-    gradleTask = "ingest"
     outputJson = "ingest.json"
+    gradleTask = "run"
 }
 
 node("${BUILD_NODE}"){
@@ -37,10 +37,6 @@ node("${BUILD_NODE}"){
                 projectName: o2ArtifactProject,
                 filter: "common-variables.groovy",
                 flatten: true])
-            step ([$class: "CopyArtifact",
-                projectName: o2ArtifactProject,
-                filter: "cucumber-configs/cucumber-config-ingest.groovy",
-                flatten: true])
         }
 
         load "common-variables.groovy"
@@ -56,7 +52,6 @@ node("${BUILD_NODE}"){
             {
                 sh """
                     echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.groovy"
                     export DISPLAY=":1"
                     gradle ${gradleTask}
                 """

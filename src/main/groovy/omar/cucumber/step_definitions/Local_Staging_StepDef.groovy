@@ -1,8 +1,8 @@
-package ossim.cucumber.step_definitions
+package omar.cucumber.step_definitions
 
-import ossim.cucumber.config.CucumberConfig
+import omar.cucumber.config.CucumberConfig
 
-import ossim.cucumber.ogc.wfs.WFSCall
+import omar.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
 
@@ -34,10 +34,11 @@ HashMap getImageInfo(String id) {
     return fileInfo
 }
 
-Given(~/^the image (.*) is not already indexed - direct s3 ingest$/) { String image ->
+Given(~/^the image (.*) is not already indexed - local ingest$/) { String image ->
 
     imageInfo = getImageInfo(image)
     def filename = imageInfo.url
+
     println "Searching for ${filename}"
 
     def filter = "filename = '${filename}'"
@@ -86,10 +87,11 @@ Given(~/^the image (.*) is not already indexed - direct s3 ingest$/) { String im
     assert features.size() == 0
 }
 
-When( ~/^the image (.*) is indexed into OMAR - direct s3 ingest$/ ) { String image ->
+When( ~/^the image (.*) is indexed into OMAR - local ingest$/ ) { String image ->
 
     def filename = imageInfo.url
-    def addRasterUrl = "${stagingService}/addRaster?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
+    println "Trying to index filename ${filename}"
+    def addRasterUrl = "${stagingService}/addRaster?buildOverviews=true&buildHistograms=true&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",
                             "-X",
                             "POST",
@@ -104,14 +106,14 @@ When( ~/^the image (.*) is indexed into OMAR - direct s3 ingest$/ ) { String ima
         command.addAll(1, config.curlOptions)
     }
     println command
+    println "CALLING POST ON URL: ${command}"
     def process = command.execute()
     process.waitFor()
 
     println "addRaster Result: ${process.text}"
 }
 
-Then(~/^the image (.*) should be available - direct s3 ingest$/) { String image ->
-
+Then(~/^the image (.*) should be available - local ingest$/) { String image ->
     def filename = imageInfo.url
     def features
 

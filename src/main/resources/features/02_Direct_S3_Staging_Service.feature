@@ -8,5 +8,3 @@ Scenario Outline: [DSTG-01] Make a given IMAGE available for discovery
 
   Examples:
     | image-name |
-    | s3://o2-test-data/direct-test/celtic/007/po_105215_pan_0000000.ntf |
-    | /data/direct-test/celtic/staged/007/po_105215_pan_0000000.ntf |

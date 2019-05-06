@@ -1,4 +1,4 @@
-package ossim.cucumber.ogc.wms
+package omar.cucumber.ogc.wms
 
 class WMSGetCapabilities
 {

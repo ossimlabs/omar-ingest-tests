@@ -1,4 +1,4 @@
-package ossim.cucumber.config
+package omar.cucumber.config
 
 import groovy.text.*
 import groovy.json.JsonSlurper
@@ -21,7 +21,6 @@ class CucumberConfig
     private static void init()
     {
         def resourceFile
-
 
         if (System.env.CUCUMBER_CONFIG_LOCATION)
         {
@@ -48,7 +47,7 @@ class CucumberConfig
             }
             if (!resourceFile)
             {
-                resourceFile = new File("src/cucumber/resources/cucumber-config.groovy").toURI().toURL()
+                resourceFile = new File("src/main/resources/cucumber-config.groovy").toURI().toURL()
             }
         }
 

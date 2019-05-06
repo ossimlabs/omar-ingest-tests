@@ -1,26 +1,66 @@
-# omar-ingest-tests
+# omar-cucumber-ingest-test
+Testing the ingest for https://omar-dev.ossim.io
 
-### Purpose
+A java application that runs a cucumber test against the O2 environment sqs-stager service.
 
-The purpose of the omar-ingest-tests project is to provide a suite of automated tests for different OMAR ingest services. These tests run nightly and when certain OMAR projects are built. The current status of the tests helps developers to ensure that OMAR's ingest services are running correctly.
+# Quickstart
 
-### Content
+## Gradle Commands
 
-The omar-ingest-tests are composed of 3 sets of tests, each for a different service.
+To run ingest test in Jenkins or locally
+ ```
+gradle run -PrunEnvironment="local"
+ ```
 
-These tests are made using Cucumber, a test language that resembles basic English. This allows anyone to look at the tests and understand their purpose and intent. Using the Cucumber tests as a guide, the tests are then converted into code. In the case of the backend tests, Groovy is used to programatically test the capabilities of the backend services.
+To run multi ingest test in Jenkins or locally
+ ```
+gradle run -PrunEnvironment="local" -Pmulti=true
+ ```
 
-- *Staging* - tests the OMAR Stager. Downloads images from AWS by sending an AVRO mesage to omar-avro, creates overviews and histograms for them using omar-stager, and then indexes them using omar-stager.
-- *DirectS3Staging* - tests the OMAR DirectS3 Staging. Indexes images on S3 directly using the omar-stager.
+To build the fat jar
+ ```
+gradle
+ ```
 
-More details on the content of the tests can be found in the Cucumber *.feature* files located in *src/cucumber/resources/features*
+To create dockerfile
+ ```
+gradle createDockerfile
+ ```
 
-### Automated Execution
+ To build the docker image (if the CURL_USERNAME and CURL_PASSWORD environment variable is set)
+ ```
+gradle buildImage
+ ```
 
-The ingest tests are automatically executed using a Jenkins build on https://jenkins.ossim.io - the job name is omar-ingest-tests-dev for the dev branch and omar-ingest-tests-release for the master branch. The tests run weekly.
+To build the docker image (if the CURL_USERNAME and CURL_PASSWORD environment variable is NOT set)
+ ```
+gradle buildImage -PcUname=<remove-raster-username> -PcPword=<remove-raster-password>
+ ```
 
-### Manual Execution
+## Run Commands
 
-Running the ingest tests manually requires Gradle. With Gradle installed, run the *gradle ingest* command from the project's base directory in order to execute the *ingest* task defined in the project's Gradle Build file.
+To run the docker image
+```
+docker run -p 8080:8080 omar-cucumber-ingest-test:<tag>
+```
+To run the Fat Jar
+```
+java -jar <path to jar>/omar-cucumber-ingest-test-<version>.jar
+```
+or
+```
+java -DmainPath=src/main -DresourcePath=src/main/resources -DcUname=<username> -DcPword="<password>" -jar <path to jar>/omar-cucumber-ingest-test-<version>.jar
+```
 
-The default config file uses the dev deployment of OMAR located at https://omar-dev.ossim.io
+## Openshift Environment Variables
+### Overides the values in the cucumber config file
+- TARGET_DEPLOYMENT
+- DOMAIN_NAME
+- TEST_IMAGE_S3_BUCKET
+- TEST_IMAGE_S3_BUCKET_URL
+- SQS_STAGING_QUEUE
+- RBT_CLOUD_ROOT_DIR
+
+### Overides the values for CURL_USER_NAME and CURL_PASSWORD
+- CURL_USER_NAME
+- CURL_PASSWORD

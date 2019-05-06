@@ -1,16 +1,19 @@
-package ossim.cucumber.step_definitions
+package omar.cucumber.step_definitions
 
 import com.amazonaws.services.sqs.AmazonSQSClient
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
-import ossim.cucumber.config.CucumberConfig
+import omar.cucumber.config.CucumberConfig
 
-import ossim.cucumber.ogc.wfs.WFSCall
-import ossim.cucumber.ogc.wms.WMSCall
+import omar.cucumber.ogc.wfs.WFSCall
+import omar.cucumber.ogc.wms.WMSCall
 
 import java.nio.charset.Charset
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 this.metaClass.mixin(cucumber.api.groovy.Hooks)
 this.metaClass.mixin(cucumber.api.groovy.EN)
@@ -140,8 +143,14 @@ When(~/^the image (.*) avro message is placed on the SQS$/) { String image ->
 
   String text = getAvroMessage(imageInfo.image_id, imageInfo.url, imageInfo.observation_time)
 
+    LocalDateTime now = LocalDateTime.now()
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    String formattedDate = now.format(formatter)
+
+
   def json = new JsonSlurper().parseText(text)
-  json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
+  json."${sqsTimestampName}" = formattedDate
+  //json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
   def newSqsText = new JsonBuilder(json).toString()
 
   def sqs = AmazonSQSClient.newInstance()

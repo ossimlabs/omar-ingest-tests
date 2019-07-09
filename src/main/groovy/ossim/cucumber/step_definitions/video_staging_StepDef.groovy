@@ -120,3 +120,19 @@ Then(~/^the video (.*) should be discoverable$/) { String video ->
   // Save the file path for later
   filepath = features[0]["properties"]["filename"]
 }
+
+Then(~/^the video (.*) should be discoverable$/) {
+    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
+
+    println new Date()
+    println "Has ${filename} been ingested?..."
+
+    def filter = "filename = '${filename}'"
+    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
+    features = wfsQuery.result.features
+    if (features.size() > 0) {
+        println "... Yes!!!"
+    }
+
+    assert features.size() == 1
+}

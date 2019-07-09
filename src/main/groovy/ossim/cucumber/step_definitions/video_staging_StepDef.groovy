@@ -103,26 +103,34 @@ Given(~/^the video (.*) is not already staged$/) { String video ->
   assert features.size() == 0
 }
 
-When(~/^the video (.*) avro message is placed on the SQS$/) { String video ->
-  println "Sending ${video}'s AVRO message to the SQS"
+When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
+    String index, String platform, String remoteType ->
 
-  String text = getAvroMessage(video, "https://o2-test-data.s3.amazonaws.com/MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg", "2019-06-06T04:02:48.000Z")
+    def filename = getFilename( index, platform, remoteType )
 
-    LocalDateTime now = LocalDateTime.now()
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-    String formattedDate = now.format(formatter)
+    def addVideoUrl = "${stagingService}/addVideo?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode("MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg
+", defaultCharset)}"
+    def command = ["curl",
+                            "-X",
+                            "POST",
+                            "${addVideoUrl}"
+                        ]
+    /*
+        add an ArrayList called curlOptions to the config file if
+        addition info needs to be added to the curl command.
+    */
+    if (config?.curlOptions)
+    {
+        command.addAll(1, config.curlOptions)
+    }
+    println command
+    def process = command.execute()
+    process.waitFor()
 
-  def json = new JsonSlurper().parseText(text)
-  json."${sqsTimestampName}" = formattedDate
-  def newSqsText = new JsonBuilder(json).toString()
-
-  def sqs = AmazonSQSClient.newInstance()
-  sqs.sendMessage(config.sqsStagingQueue, newSqsText)
-
-  println "... Sent!"
+    println "addRaster Result: ${process.text}"
 }
 
-Then(~/^the image (.*) should be discoverable$/) { String video ->
+Then(~/^the video (.*) should be discoverable$/) { String video ->
   def features
 
   println new Date()

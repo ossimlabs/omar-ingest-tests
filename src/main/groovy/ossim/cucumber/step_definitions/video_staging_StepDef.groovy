@@ -1,19 +1,10 @@
-package omar.cucumber.step_definitions
+package ossim.cucumber.step_definitions
 
-import com.amazonaws.services.sqs.AmazonSQSClient
+import ossim.cucumber.config.CucumberConfig
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
-
-import omar.cucumber.config.CucumberConfig
-
-import omar.cucumber.ogc.wfs.WFSCall
-import omar.cucumber.ogc.wms.WMSCall
+import ossim.cucumber.ogc.wfs.WFSCall
 
 import java.nio.charset.Charset
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 
 this.metaClass.mixin(cucumber.api.groovy.Hooks)
 this.metaClass.mixin(cucumber.api.groovy.EN)
@@ -21,24 +12,7 @@ this.metaClass.mixin(cucumber.api.groovy.EN)
 String defaultCharset = Charset.defaultCharset().displayName()
 
 config = CucumberConfig.config
-def bucketUrl = config.s3BucketUrl
-def imageBucket = config.s3Bucket
 def stagingService = config.stagingService
-def wmsServer = config.wmsServerProperty
-def wfsServer = config.wfsServerProperty
-def waitForStage = config.waitForStage ?: 10
-def sqsTimestampName = config.sqsTimestampName
-def imageSpaceUrl = config.imageSpaceUrl
-
-def imageId
-def filepath = ""
-HashMap imageInfo
-
-String getAvroMessage(String videoId, String url, String observationDateTime) {
-  String messageStr= """{"Message":{\"${msg_image_id_field}\":\"${imageId}\",\"${msg_observation_date_time_field }\":\"${observationDateTime}\",\"${msg_url_field}\":\"${url}\"}}"""
-  println messageStr
-  return messageStr
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -8,4 +8,4 @@ Scenario Outline: [STG-01] Make a given VIDEO available for discovery
 
   Examples:
     | video-name |
-    | 21FEB03000019081saMISP-_HD000999 |
+    | 21FEB03000019071saMISP-_HD000999 |

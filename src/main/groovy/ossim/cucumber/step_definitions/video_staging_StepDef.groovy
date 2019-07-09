@@ -13,12 +13,12 @@ String defaultCharset = Charset.defaultCharset().displayName()
 
 config = CucumberConfig.config
 def stagingService = config.stagingService
+def filename = "s3://o2-test-data/MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 Given(~/^the video (.*) is not already staged$/) {
-    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
-
+    
     def filter = "filename = '${filename}'"
     def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
     def features = wfsQuery.result.features
@@ -67,8 +67,6 @@ Given(~/^the video (.*) is not already staged$/) {
 
 When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
 
-    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
-
     def addVideoUrl = "${stagingService}/addVideo?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",
                             "-X",
@@ -91,7 +89,6 @@ When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
 }
 
 Then(~/^the video (.*) should be discoverable$/) {
-    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
 
     println new Date()
     println "Has ${filename} been ingested?..."

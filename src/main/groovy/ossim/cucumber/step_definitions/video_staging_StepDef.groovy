@@ -16,65 +16,53 @@ def stagingService = config.stagingService
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-Given(~/^the video (.*) is not already staged$/) { String video ->
+Given(~/^the video (.*) is not already staged$/) {
+    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
 
-  println "==========="
-  println "Searching for video ${video}"
+    def filter = "filename = '${filename}'"
+    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
+    def features = wfsQuery.result.features
 
-  def filter = "filename LIKE '%${video}%'"
-  def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-  def features = wfsQuery.result.features
+    // if any files are found, delete them
+    if (features.size() > 0) {
+        println "... It's already indexed!"
+        features.each() {
+            String file = it.properties.filename
+            println "Removing ${file} from database"
+            def removeVideoUrl = "${stagingService}/removeRaster?filename=${URLEncoder.encode(file, defaultCharset)}"
+            def command = ["curl",
+                                    "-u",
+                                    "${config.curlUname}",
+                                    "-X",
+                                    "POST",
+                                    "${removeVideoUrl}"
+                                ]
+            /*
+                add an ArrayList called curlOptions to the config file if
+                addition info needs to be added to the curl command.
+            */
+            if (config?.curlOptions)
+            {
+                command.addAll(1, config.curlOptions)
+            }
+            println command
+            def process = command.execute()
+            process.waitFor()
+            println "... Removed!"
+        }
 
-  // if any files are found, delete them
-  if (features.size() > 0)
-  {
-      println "... It's already staged!"
-      features.each() {
-          def filename = it.properties.filename
-          println "Deleting ${filename}"
-          def removeVideoUrl = "${stagingService}/removeVideo?deleteFiles=true&filename=${URLEncoder.encode(filename, defaultCharset)}"
-          def command = ["curl",
-                                  "-u",
-                                  "${config.curlUname}",
-                                  "-X",
-                                  "POST",
-                                  "${removeVideoUrl}"
-                              ]
-          /*
-              add an ArrayList called curlOptions to the config file if
-              addition info needs to be added to the curl command.
-          */
-          if (config?.curlOptions)
-          {
-              command.addAll(1, config.curlOptions)
-          }
-          println command
-          def process = command.execute()
-          process.waitFor()
-          println "... Deleted!"
-      }
+        // redo the WFS query to see if the files have been removed
+        println "Checking to make sure they are removed..."
+        wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
 
-      // redo the WFS query to see if the files have been removed
-      println "Checking to make sure they are deleted..."
-      wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-
-      features = wfsQuery.result.features
-      if (features.size() == 0)
-      {
-          println "... Yup, it's gone!"
-      }
-      else
-      {
-          println "... Uh oh, doesn't look like it was deleted."
-      }
-  }
-  else
-  {
-      println "... Not staged yet."
-  }
+        features = wfsQuery.result.features
+        if (features.size() == 0) { println "Video has been removed" }
+        else { println "... doesn't look like it was removed." }
+    }
+    else { println "... Not indexed yet." }
 
 
-  assert features.size() == 0
+    assert features.size() == 0
 }
 
 When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
@@ -99,7 +87,7 @@ When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
     def process = command.execute()
     process.waitFor()
 
-    println "addRaster Result: ${process.text}"
+    println "addVideo Result: ${process.text}"
 }
 
 Then(~/^the video (.*) should be discoverable$/) { String video ->

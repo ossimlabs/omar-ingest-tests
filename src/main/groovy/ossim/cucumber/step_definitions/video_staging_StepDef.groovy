@@ -90,37 +90,6 @@ When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
     println "addVideo Result: ${process.text}"
 }
 
-Then(~/^the video (.*) should be discoverable$/) { String video ->
-  def features
-
-  println new Date()
-  println "Has ${video} been ingested yet?..."
-
-  def timer = 60 * waitForStage
-  while (timer > 0)
-  {
-      sleep(5000)
-      def filter = "filename LIKE '%${video}%'"
-      def wfsQuery = new WFSCall(wfsServer, filter, "JSON", 1)
-      features = wfsQuery.result.features
-      if (features.size() > 0)
-      {
-          println "... Yes!!!"
-          timer = 0
-      }
-      else
-      {
-          print "... "
-          timer -= 5
-      }
-  }
-
-  assert features.size() == 1
-
-  // Save the file path for later
-  filepath = features[0]["properties"]["filename"]
-}
-
 Then(~/^the video (.*) should be discoverable$/) {
     def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
 

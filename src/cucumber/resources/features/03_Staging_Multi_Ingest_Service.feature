@@ -1,5 +1,5 @@
-@staging_multi_ingest_service
-Feature: StagingMultiIngestService
+# @staging_multi_ingest_service
+# Feature: StagingMultiIngestService
 
   Scenario: [STG-01] Make a GeoEye PAN GeoTIFF image available for discovery
     Given a GeoEye PAN GeoTIFF is not already staged - multi ingest

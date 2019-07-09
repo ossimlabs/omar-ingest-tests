@@ -19,7 +19,7 @@ def filename = "/data/videos/uav/predator/MISP-_42FB6D65_21FEB03000019071saMISP-
 
 Given(~/^the video (.*) is not already staged$/) {
     
-    def filter = "filename = '${filename}'"
+    def filter = "filename='/data/videos/uav/predator/MISP-_42FB6D65_21FEB03000019071saMISP-_HD000999.mpg'"
     def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
     def features = wfsQuery.result.features
 

@@ -1,5 +1,5 @@
-# @direct_s3_staging_service
-# Feature: StagingService
+@direct_s3_staging_service
+Feature: StagingService
 
     Scenario: [DSTG-01] Make an AWS Remote QuickBirdPan NITF Direct S3 image available for discovery
         Given an AWS Remote QuickBirdPan NITF S3 image is not already indexed

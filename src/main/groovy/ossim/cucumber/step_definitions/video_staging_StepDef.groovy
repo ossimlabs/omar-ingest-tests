@@ -104,12 +104,10 @@ Given(~/^the video (.*) is not already staged$/) { String video ->
 }
 
 When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
-    String index, String platform, String remoteType ->
 
-    def filename = getFilename( index, platform, remoteType )
+    def filename = "MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
 
-    def addVideoUrl = "${stagingService}/addVideo?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode("MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg
-", defaultCharset)}"
+    def addVideoUrl = "${stagingService}/addVideo?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",
                             "-X",
                             "POST",

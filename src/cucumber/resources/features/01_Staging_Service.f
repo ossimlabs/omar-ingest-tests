@@ -1,5 +1,5 @@
-# @staging_service
-# Feature: StagingService
+@staging_service
+Feature: StagingService
 
     Scenario: [STG--02] Make a GeoEye MSI GeoTIFF image available for discovery
         Given a GeoEye MSI GeoTIFF is not already staged

@@ -29,7 +29,7 @@ Given(~/^the video (.*) is not already staged$/) {
         features.each() {
             String file = it.properties.filename
             println "Removing ${file} from database"
-            def removeVideoUrl = "${stagingService}/removeRaster?filename=${URLEncoder.encode(file, defaultCharset)}"
+            def removeVideoUrl = "${stagingService}/removeVideo?filename=${URLEncoder.encode(file, defaultCharset)}"
             def command = ["curl",
                                     "-u",
                                     "${config.curlUname}",

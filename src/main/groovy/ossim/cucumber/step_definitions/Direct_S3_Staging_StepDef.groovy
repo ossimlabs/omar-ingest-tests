@@ -79,8 +79,6 @@ When( ~/^an AWS Remote (.*) (.*) (.*) image is indexed into OMAR$/ ) {
     String index, String platform, String remoteType ->
 
     def filename = getFilename( index, platform, remoteType )
-    
-    println "printing filename" + filename
 
     def addRasterUrl = "${stagingService}/addRaster?buildOverviews=false&buildHistograms=false&background=false&filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",

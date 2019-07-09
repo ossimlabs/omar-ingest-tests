@@ -67,7 +67,7 @@ Given(~/^the video (.*) is not already staged$/) {
 
 When( ~/^an AWS Remote (.*) video is indexed into OMAR$/ ) {
 
-    def addVideoUrl = "${stagingService}/dataManager/addVideo?filename=${URLEncoder.encode(filename, defaultCharset)}"
+    def addVideoUrl = "${stagingService}/addVideo?filename=${URLEncoder.encode(filename, defaultCharset)}"
     def command = ["curl",
                             "-X",
                             "POST",

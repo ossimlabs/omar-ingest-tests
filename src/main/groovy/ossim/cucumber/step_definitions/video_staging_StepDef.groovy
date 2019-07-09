@@ -18,7 +18,7 @@ def filename = "/data/videos/uav/predator/MISP-_42FB6D65_21FEB03000019071saMISP-
 Given(~/^the video (.*) is not already staged$/) {
     
     def filter = "filename = '${filename}'"
-    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
+    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1, "omar:video_data_set")
     def features = wfsQuery.result.features
 
     // if any files are found, delete them
@@ -92,7 +92,7 @@ Then(~/^the video (.*) should be discoverable$/) {
     println "Has ${filename} been ingested?..."
 
     def filter = "filename = '${filename}'"
-    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1)
+    def wfsQuery = new WFSCall(config.wfsServerProperty, filter, "JSON", 1, "omar:video_data_set")
     features = wfsQuery.result.features
     if (features.size() > 0) {
         println "... Yes!!!"

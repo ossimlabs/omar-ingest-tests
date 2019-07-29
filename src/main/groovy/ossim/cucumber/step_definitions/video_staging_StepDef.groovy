@@ -13,7 +13,7 @@ String defaultCharset = Charset.defaultCharset().displayName()
 
 config = CucumberConfig.config
 def stagingService = config.stagingService
-def filename = "s3://o2-test-data/MISP-_42FB6DA1_21FEB03000019081saMISP-_HD000999.mpg"
+def filename = "/data/videos/uav/predator/MISP-_42FB6D65_21FEB03000019071saMISP-_HD000999.mpg"
 
 
 /* FEATURE STEP DEFINITIONS */

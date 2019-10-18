@@ -53,7 +53,6 @@ node("${BUILD_NODE}"){
             {
                 sh """
                     echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.groovy"
                     export DISPLAY=":1"
                     gradle ${gradleTask}
                 """

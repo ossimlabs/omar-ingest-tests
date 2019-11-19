@@ -188,6 +188,7 @@ And(~/^a WMS call should produce an image$/) {
         wmsReturnImage = wmsCall.getImage(wmsServer, 256, 256, "png", bbox, filter)
 
         println "Downloading and checking image..."
+	println wmsReturnImage.toString()
         def imagePng = downloadImage(wmsReturnImage.toString())
         assert imagePng.length() > 0
         println "... image exists!"

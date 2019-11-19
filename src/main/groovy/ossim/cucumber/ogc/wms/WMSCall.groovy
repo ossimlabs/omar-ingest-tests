@@ -26,9 +26,9 @@ class WMSCall {
         WIDTH:"${width}",
         HEIGHT:"${height}",
         FORMAT:"image/${return_image_type}",
-        STYLES:URLEncoder.encode("""{"nullPixelFlip": false}""", "UTF-8"),
+        STYLES:'{"nullPixelFlip": false}',
         TRANSPARENT:true,
-        FILTER: URLEncoder.encode(filter, "UTF-8")
+        FILTER: filter
       ]
 
       String wmsParamsString = urlParamsToString(wmsParams)
@@ -85,6 +85,6 @@ class WMSCall {
 
     static String urlParamsToString(HashMap urlParams)
     {
-      urlParams.collect(){k,v->"${k}=${v}" }.join("&")?.toString()
+      urlParams.collect(){k,v->"${URLEncoder.encode(k, 'utf-8')}=${URLEncoder.encode(v, 'utf-8')}" }.join("&")?.toString()
     }//end urlParamsToString
 }

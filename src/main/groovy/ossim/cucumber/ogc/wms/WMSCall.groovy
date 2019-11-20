@@ -85,6 +85,6 @@ class WMSCall {
 
     static String urlParamsToString(HashMap urlParams)
     {
-      urlParams.collect(){k,v->"${URLEncoder.encode(k, 'utf-8')}=${URLEncoder.encode(v, 'utf-8')}" }.join("&")?.toString()
+      urlParams.collect(){k,v->"${URLEncoder.encode(k, 'utf-8')}=${URLEncoder.encode(v as String, 'utf-8')}" }.join("&")?.toString()
     }//end urlParamsToString
 }

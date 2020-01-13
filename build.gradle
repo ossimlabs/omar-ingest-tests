@@ -87,11 +87,14 @@ dependencies {
 
     compile "org.gebish:geb-core:1.0"
 
-    compile( "org.geoscript:geoscript-groovy:1.7.0" ) {
-        exclude module: 'ehcache'
-        exclude module: "groovy-all"
-        exclude module: "slf4j-log4j12"
-        exclude module: "xml-apis"
+  compile( "org.geoscript:geoscript-groovy:1.14.0" ) {
+    exclude module: "ehcache"
+    exclude module: "groovy-all"
+    exclude module: "slf4j-log4j12"
+    exclude module: "xml-apis"
+    exclude module: "commons-beanutils"
+    exclude module: "gt-jdbc-spatialite"
+    exclude module: 'gt-swing'    
     }
 
     cucumberRuntime files( "${jar.archivePath}" )

@@ -65,6 +65,7 @@ Given(~/^(.*) (.*) (.*) (.*) is not already staged$/) {
         if (features.size() > 0)
         {
             println "... It's already staged!"
+		println config.curlUname
             features.each() {
                 def filename = it.properties.filename
                 println "Deleting ${filename}"

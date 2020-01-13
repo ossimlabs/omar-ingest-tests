@@ -1,7 +1,7 @@
 package ossim.cucumber.ogc.wms
 
 import groovy.json.JsonSlurper
-import com.vividsolutions.jts.io.WKTReader
+import org.location.tech.jts.io.WKTReader
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import ossim.cucumber.ogc.wfs.WFSCall

@@ -131,7 +131,7 @@ When(~/^its AVRO message is placed on the SQS$/) {
         def json = new JsonSlurper().parseText(text)
         json."${sqsTimestampName}" = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone("UTC"))
         def newSqsText = new JsonBuilder(json).toString()
-
+println config.sqsStagingQueue
         def sqs = AmazonSQSClient.newInstance()
         sqs.sendMessage(config.sqsStagingQueue, newSqsText)
 
